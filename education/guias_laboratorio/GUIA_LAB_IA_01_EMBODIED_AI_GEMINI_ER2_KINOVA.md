@@ -12,6 +12,7 @@
 
 | Descripción del Cambio | Justificación | Fecha |
 |---|---|:---:|
+| Ubicación de la práctica en el Tercer Corte | La práctica se evalúa en el tercer corte: el instrumento ABET registra "Tercer Corte", el aporte L₃ y el nombre de archivo `C3_LIA01_G<grupo>_<codigo1>_<codigo2>_v1.docx`. | 13/10/2026 |
 | Entrega mediante instrumento ABET único con criterios, indicadores y niveles N1–N5 | La plantilla de informe libre no seguía la convención de las demás prácticas. Se reemplaza por `INSTRUMENTO_ABET_LAB_IA_01_EMBODIED_AI_GEMINI_ER2.docx`, que reúne evidencias E1–E9, tablas, cuestionario, Anexo A individual, rúbricas por criterio en escala 0–500 y consolidación ABET. La tabla de RAE de esta guía muestra ahora los indicadores de desempeño. | 13/10/2026 |
 | Versión inicial de la práctica y de su plantilla de código e informe | Lleva a laboratorio la propuesta de razonamiento espacial con Gemini Robotics-ER (`docs/research/EXPERIMENTO_IA_LOCALIZACION_GEMINI.md`, `ros2_setup/PROPUESTA_GEMINI_ER.md`), actualizada al modelo `gemini-robotics-er-2-preview`. Ofrece dos rutas equivalentes: **A sin ROS 2** (RTSP directo) y **B con ROS 2** (driver `kinova_vision`). Incorpora el registro de la profundidad al marco de color, que la propuesta original omitía, y la calibración de la cámara de color, porque el archivo por defecto del driver para 1920×1080 trae un punto principal imposible (`cy = 96.97 px`). | 28/09/2026 |
 
@@ -130,7 +131,7 @@ La práctica se realiza en **grupos de 2 o 3 personas**. Cada grupo elige una ru
 
 **Duración:** una sesión presencial de 3 horas (turnos de captura de 10 minutos por grupo en la Ruta A) y trabajo autónomo para los experimentos que no requieren el robot.
 
-**Código base:** [`plantilla_lab_ia_embodied/`](plantilla_lab_ia_embodied/README.md). **Entrega y evaluación:** instrumento ABET único [`INSTRUMENTO_ABET_LAB_IA_01_EMBODIED_AI_GEMINI_ER2.docx`](../evidencias_abet/INSTRUMENTO_ABET_LAB_IA_01_EMBODIED_AI_GEMINI_ER2.docx), con el nombre de archivo `C2_LIA01_G<grupo>_<codigo1>_<codigo2>_v1.docx`.
+**Código base:** [`plantilla_lab_ia_embodied/`](plantilla_lab_ia_embodied/README.md). **Entrega y evaluación:** instrumento ABET único [`INSTRUMENTO_ABET_LAB_IA_01_EMBODIED_AI_GEMINI_ER2.docx`](../evidencias_abet/INSTRUMENTO_ABET_LAB_IA_01_EMBODIED_AI_GEMINI_ER2.docx), con el nombre de archivo `C3_LIA01_G<grupo>_<codigo1>_<codigo2>_v1.docx`.
 
 ### 4.1. Resultados de Aprendizaje Evaluables (RAE) y Ponderación
 

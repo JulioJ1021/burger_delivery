@@ -12,7 +12,7 @@
 | **Programa Académico** | Ingeniería Mecatrónica |
 | **Asignatura** | INTELIGENCIA ARTIFICIAL |
 | **Periodo Académico** | 2026-2 |
-| **Corte / Instrumento** | Segundo Corte / Laboratorios y evidencias experimentales |
+| **Corte / Instrumento** | Tercer Corte / Laboratorios y evidencias experimentales |
 | **Actividad Evaluada** | Laboratorio IA 01 — Embodied AI: razonamiento espacial con Gemini Robotics-ER 2 y localización 3D con la cámara RGB-D del Kinova Gen3 |
 | **Número de Grupo / Subgrupo** | |
 | **Estudiante 1 (Nombre y Código)** | |
@@ -20,7 +20,7 @@
 | **Estudiante 3 (si aplica)** | |
 | **Ruta del Equipo** | Ruta A — sin ROS 2 ☐ &nbsp;&nbsp;&nbsp;&nbsp; Ruta B — con ROS 2 ☐ |
 | **Repositorio y Commit con los TODO Resueltos (SHA)** | |
-| **Nombre del Archivo de Entrega** | `C2_LIA01_G<grupo>_<codigo1>_<codigo2>_v1.docx` |
+| **Nombre del Archivo de Entrega** | `C3_LIA01_G<grupo>_<codigo1>_<codigo2>_v1.docx` |
 | **Anexos Obligatorios del Envío** | `resultados.csv` y las imágenes `capturas/*_resultado.png` citadas en el documento |
 | **Fecha de Realización en Laboratorio** | |
 | **Fecha de Entrega del Documento** | |
@@ -403,7 +403,7 @@ Marque con una **X** una sola casilla por criterio y registre el valor entero (0
 
 ```text
 Nota Académica sobre 5,0 = Nota Consolidada sobre 500 ÷ 100
-Aporte a Laboratorios del Corte: L = Nota Académica sobre 5,0
+Aporte a Laboratorios del Tercer Corte: L₃ = Nota Académica sobre 5,0
 ```
 
 | Resultado Oficial de la Actividad | Registro |

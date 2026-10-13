@@ -12,6 +12,7 @@
 
 | Descripción del Cambio | Justificación | Fecha |
 |---|---|:---:|
+| Entrega mediante instrumento ABET único con criterios, indicadores y niveles N1–N5 | La plantilla de informe libre no seguía la convención de las demás prácticas. Se reemplaza por `INSTRUMENTO_ABET_LAB_IA_01_EMBODIED_AI_GEMINI_ER2.docx`, que reúne evidencias E1–E9, tablas, cuestionario, Anexo A individual, rúbricas por criterio en escala 0–500 y consolidación ABET. La tabla de RAE de esta guía muestra ahora los indicadores de desempeño. | 13/10/2026 |
 | Versión inicial de la práctica y de su plantilla de código e informe | Lleva a laboratorio la propuesta de razonamiento espacial con Gemini Robotics-ER (`docs/research/EXPERIMENTO_IA_LOCALIZACION_GEMINI.md`, `ros2_setup/PROPUESTA_GEMINI_ER.md`), actualizada al modelo `gemini-robotics-er-2-preview`. Ofrece dos rutas equivalentes: **A sin ROS 2** (RTSP directo) y **B con ROS 2** (driver `kinova_vision`). Incorpora el registro de la profundidad al marco de color, que la propuesta original omitía, y la calibración de la cámara de color, porque el archivo por defecto del driver para 1920×1080 trae un punto principal imposible (`cy = 96.97 px`). | 28/09/2026 |
 
 ---
@@ -129,21 +130,33 @@ La práctica se realiza en **grupos de 2 o 3 personas**. Cada grupo elige una ru
 
 **Duración:** una sesión presencial de 3 horas (turnos de captura de 10 minutos por grupo en la Ruta A) y trabajo autónomo para los experimentos que no requieren el robot.
 
-**Código base:** [`plantilla_lab_ia_embodied/`](plantilla_lab_ia_embodied/README.md). **Informe:** [`PLANTILLA_INFORME_LAB_IA_01_EMBODIED_AI.docx`](plantilla_lab_ia_embodied/PLANTILLA_INFORME_LAB_IA_01_EMBODIED_AI.docx).
+**Código base:** [`plantilla_lab_ia_embodied/`](plantilla_lab_ia_embodied/README.md). **Entrega y evaluación:** instrumento ABET único [`INSTRUMENTO_ABET_LAB_IA_01_EMBODIED_AI_GEMINI_ER2.docx`](../evidencias_abet/INSTRUMENTO_ABET_LAB_IA_01_EMBODIED_AI_GEMINI_ER2.docx), con el nombre de archivo `C2_LIA01_G<grupo>_<codigo1>_<codigo2>_v1.docx`.
 
 ### 4.1. Resultados de Aprendizaje Evaluables (RAE) y Ponderación
 
-| Criterio | Evidencia observable | SO | Ponderación |
+| Criterio | RAE / Indicador de Desempeño | SO | Ponderación |
 |---|---|:---:|:---:|
-| **C1. Implementación del pipeline percepción → razonamiento → geometría** | TODO completos, `pytest` en verde, CSV generado por el código del grupo | SO1 | 30% |
-| **C2. Diseño experimental y medición** | Protocolo de las fases 4 a 7 con repeticiones, verdad de terreno medida y variables controladas | SO6 | 25% |
-| **C3. Análisis crítico del modelo** | Métricas (tasa de acierto, error 3D, latencia, tokens), ablación y discusión de fallas del VLM | SO6 | 20% |
-| **C4. Informe técnico** | Plantilla de informe completa, figuras anotadas y conclusiones sustentadas en datos | SO3 | 15% |
-| **C5. Uso responsable de IA, seguridad y trabajo en equipo** | Manejo de la clave, datos enviados a terceros, respeto de la zona del robot, roles declarados | SO4 / SO5 | 10% |
+| **C1. Implementación del pipeline percepción → razonamiento → geometría** | **1.1.** Aplica principios matemáticos (matrices de transformación homogénea, rotaciones y cuaterniones) para resolver problemas espaciales en robótica. | SO1 | 30% |
+| **C2. Diseño experimental y medición** | **6.1.** Diseña y ejecuta pruebas experimentales con verdad de terreno medida, repeticiones y variables controladas para cuantificar exactitud, latencia y repetibilidad. | SO6 | 25% |
+| **C3. Análisis crítico del modelo** | **6.4.** Interpreta fallas y diagnósticos experimentales aplicando protocolos por capas para aislar errores en hardware y software. | SO6 | 20% |
+| **C4. Informe técnico y comunicación de resultados** | **3.1 - 3.3.** Elabora documentación técnica reproducible y comunica resultados experimentales con métricas y demostraciones. | SO3 | 15% |
+| **C5. Uso responsable de IA, seguridad y trabajo en equipo** | **4.3.** Aplica buenas prácticas en el uso de datos de cámara, operación segura y roles de equipo.<br>**5.1.** Define roles técnicos y coordina la ejecución colaborativa en equipo. | SO4 / SO5 | 10% |
 | **Total** | | | **100%** |
 
+Cada criterio se califica en cinco niveles sobre la escala Zubatronic/SGDE (0–500). **N3 es el umbral individual de logro** y la meta de cohorte es que al menos el 70 % de los estudiantes alcance N3 o superior en cada indicador. La nota sobre 5,0 es el consolidado ponderado sobre 500 dividido entre 100.
+
+| Nivel | Intervalo | Interpretación |
+|:---:|:---:|---|
+| **N5** | 475–500 | Excelente: evidencia completa, rigurosa y reproducible, con profundidad analítica sobresaliente. |
+| **N4** | 400–474 | Bueno: desempeño correcto con omisiones menores que no comprometen la validez de las mediciones. |
+| **N3** | 300–399 | Aceptable: desempeño esencial con evidencia verificable (umbral de logro). |
+| **N2** | 150–299 | Parcial: evidencia incompleta, métricas faltantes o conclusiones sin sustento en los datos. |
+| **N1** | 0–149 | No cumple: evidencia mínima o no funcional; sin evidencia obligatoria se registra 0. |
+
+Las rúbricas con la evidencia observable de cada nivel por criterio están en el instrumento ABET (sección 9).
+
 > [!NOTE]
-> Los códigos SO siguen la numeración ABET usada en las demás guías del repositorio; ajústelos a los indicadores del syllabus vigente de Inteligencia Artificial.
+> Los indicadores 1.1, 3.1 - 3.3, 4.3, 5.1 y 6.4 se citan como aparecen en los instrumentos del programa usados en las demás prácticas; el 6.1 se redactó para esta práctica. Verifíquelos contra el syllabus vigente de Inteligencia Artificial.
 
 ---
 
@@ -365,6 +378,8 @@ Los niveles `minimal` y `medium` son opcionales: si el modelo rechaza alguno, re
 ---
 
 ## 8. RESULTADOS DE LA PRÁCTICA
+
+Las tablas se diligencian en el instrumento ABET de entrega (sección 6), que además pide las evidencias E1–E9 y la declaración de uso de IA generativa (Tabla 8). Aquí se reproducen como referencia para la sesión.
 
 ### Tabla 1: Entorno y Autoevaluación
 | Ítem | Valor |

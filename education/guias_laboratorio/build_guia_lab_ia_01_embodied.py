@@ -3,11 +3,12 @@
 Constructor de los Word de la Guía de Laboratorio IA 01 (Embodied AI con Gemini Robotics-ER 2).
 
 La fuente única es GUIA_LAB_IA_01_EMBODIED_AI_GEMINI_ER2_KINOVA.md. Este script la convierte
-al formato institucional GL-AA-F-1 (templates/Formato_Guias_de_Laboratorio.docx) y genera,
-a partir de sus secciones 8 a 11, la plantilla de informe que entregan los grupos:
+al formato institucional GL-AA-F-1 (templates/Formato_Guias_de_Laboratorio.docx):
 
     GUIA_LAB_IA_01_EMBODIED_AI_GEMINI_ER2_KINOVA.docx
-    plantilla_lab_ia_embodied/PLANTILLA_INFORME_LAB_IA_01_EMBODIED_AI.docx
+
+La entrega de los grupos es el instrumento ABET, que se genera aparte con
+education/evidencias_abet/build_instrumento_lab_ia_01.py (reutiliza bloques() y anchos()).
 
 Reutiliza los estilos del constructor de la Guía 02 para que todas las guías se vean igual.
 Ejecución:  python3 education/guias_laboratorio/build_guia_lab_ia_01_embodied.py
@@ -22,7 +23,7 @@ from pathlib import Path
 
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.shared import Pt
+from docx.shared import Cm, Pt
 
 AQUI = Path(__file__).resolve().parent
 sys.path.insert(0, str(AQUI))
@@ -30,7 +31,6 @@ import build_guia_lab_02_camara_kinova as estilo  # noqa: E402
 
 FUENTE = AQUI / "GUIA_LAB_IA_01_EMBODIED_AI_GEMINI_ER2_KINOVA.md"
 GUIA = AQUI / "GUIA_LAB_IA_01_EMBODIED_AI_GEMINI_ER2_KINOVA.docx"
-INFORME = AQUI / "plantilla_lab_ia_embodied" / "PLANTILLA_INFORME_LAB_IA_01_EMBODIED_AI.docx"
 
 ASIGNATURA = "INTELIGENCIA ARTIFICIAL"
 TITULO = ("Práctica IA 01. Embodied AI: razonamiento espacial con Gemini Robotics-ER 2 "
@@ -156,7 +156,22 @@ def anchos(filas: list[list[str]], total_cm: float = 17.0) -> list[float]:
     """Repartir el ancho de página según el texto más largo de cada columna."""
     columnas = max(len(f) for f in filas)
     peso = [max(len(f[j]) if j < len(f) else 0 for f in filas) ** 0.5 + 2 for j in range(columnas)]
+    # Una columna vacía es espacio para escribir a mano: darle ancho, no lo mínimo.
+    vacias = [j for j in range(columnas) if not any(j < len(f) and f[j].strip() for f in filas[1:])]
+    if len(filas) > 1 and len(vacias) < columnas:
+        for j in vacias:
+            peso[j] = max(peso[j], 0.8 * max(peso))
     return [round(total_cm * w / sum(peso), 2) for w in peso]
+
+
+def fijar_anchos(tabla, anchos_cm: list[float]):
+    """Fijar la cuadrícula de columnas además del ancho de celda: LibreOffice y Word
+    ignoran el ancho de celda si la tabla queda en ajuste automático."""
+    tabla.autofit = False
+    for j, ancho in enumerate(anchos_cm):
+        tabla.columns[j].width = Cm(ancho)
+        for celda in tabla.columns[j].cells:
+            celda.width = Cm(ancho)
 
 
 def encabezado_seccion(doc, titulo: str, nueva_pagina: bool = False):
@@ -192,8 +207,8 @@ def escribir(doc, contenido, modelo_tabla):
             for nivel, num, texto in datos:
                 estilo.add_list_item(doc, texto, num, level=nivel)
         elif tipo == "tabla":
-            estilo.add_data_table(doc, datos, modelo_tabla, font_size=7.5 if len(datos[0]) > 4 else 8,
-                                  widths=anchos(datos))
+            fijar_anchos(estilo.add_data_table(doc, datos, modelo_tabla, font_size=7.5 if len(datos[0]) > 4 else 8),
+                         anchos(datos))
 
 
 def pagina_inicial(doc, cuerpo, sect_pr, modelos, docente: str, tipo: str | None = None):
@@ -293,79 +308,10 @@ def construir_guia(secs: dict, docente: str):
     print(f"Guía Word: {GUIA}")
 
 
-def construir_informe(secs: dict):
-    doc, modelos, material = cargar_modelos()
-    cuerpo = doc._element.body
-    sect_pr = cuerpo.sectPr
-    pagina_inicial(doc, cuerpo, sect_pr, modelos["cover"][:2] + (None,), "",
-                   tipo="Informe de\nPráctica de Laboratorio")
-
-    estilo.add_section_heading(doc, "Plantilla de informe — entrega del grupo")
-    estilo.add_callout(doc, "NOTA",
-                       "Nombre del archivo: IA_L01_G<grupo>_<codigo1>_<codigo2>_v1.docx. Reemplace cada "
-                       "campo entre corchetes y complete las tablas con los datos de resultados/resultados.csv. "
-                       "Adjunte ese CSV y las imágenes capturas/*_resultado.png como anexos del envío.")
-    estilo.add_data_table(doc, [
-        ["Campo", "Valor"],
-        ["Grupo", "[G__]"],
-        ["Integrantes (código – nombre – rol)", "\n".join(["[código – nombre – rol]"] * 3)],
-        ["Ruta", "[A sin ROS 2 / B con ROS 2]"],
-        ["Repositorio y commit (SHA) con los TODO resueltos", "[URL] @ [SHA]"],
-        ["Fecha de la sesión y de las consultas a la API", "[AAAA-MM-DD]"],
-    ], material, font_size=8)
-
-    estilo.add_section_heading(doc, "1. Resumen")
-    estilo.add_body(doc, "[Máximo 150 palabras: qué se hizo, principal resultado cuantitativo y conclusión.]",
-                    italic=True)
-
-    estilo.add_section_heading(doc, "2. Prompts utilizados")
-    estilo.add_body(doc, "[Copie el prompt propio (TODO 1) y la versión ingenua con la que lo comparó. "
-                         "Explique qué relación espacial obliga a razonar.]", italic=True)
-    estilo.add_code_box(doc, ["PROMPTS[\"propio\"] = ..."])
-
-    estilo.add_section_heading(doc, "3. Resultados")
-    escribir(doc, secs["RESULTADOS DE LA PRÁCTICA"], material)
-    estilo.add_body(doc, "[Incluya al menos dos imágenes anotadas: un acierto y un fallo del modelo.]", italic=True)
-
-    encabezado_seccion(doc, "4. Análisis de resultados", nueva_pagina=True)
-    for tipo, datos in secs["ANÁLISIS DE RESULTADOS"]:
-        if tipo == "lista":
-            for _, num, texto in datos:
-                estilo.add_list_item(doc, texto, num)
-                estilo.add_body(doc, "[Respuesta sustentada con datos de las tablas.]", italic=True, left=0.55)
-    estilo.add_section_heading(doc, "5. Preguntas para la discusión")
-    for tipo, datos in secs["PREGUNTAS PARA LA DISCUSIÓN"]:
-        if tipo == "lista":
-            for _, num, texto in datos:
-                estilo.add_list_item(doc, texto, num)
-                estilo.add_body(doc, "[Respuesta.]", italic=True, left=0.55)
-    estilo.add_section_heading(doc, "6. Conclusiones")
-    for n in (1, 2, 3):
-        estilo.add_list_item(doc, "[Conclusión sustentada en una tabla o figura.]", n)
-
-    estilo.add_section_heading(doc, "7. Declaración de uso de herramientas de IA generativa")
-    estilo.add_data_table(doc, [
-        ["Herramienta", "Para qué se usó (código, redacción, depuración…)", "Cómo se verificó el resultado"],
-        ["[p. ej. asistente de código]", "", ""],
-        ["Gemini Robotics-ER 2", "Objeto de estudio de la práctica", "Tablas 4 a 7"],
-    ], material, font_size=8)
-    estilo.add_body(doc, "Confirmo que el informe corresponde al trabajo del grupo, que los datos provienen de "
-                         "las ejecuciones registradas en resultados.csv y que ninguna clave de API quedó en el "
-                         "repositorio ni en los anexos.", italic=True)
-
-    estilo.configure_footer(doc)
-    cp = doc.core_properties
-    cp.title = "Plantilla de informe – Laboratorio IA 01 – Embodied AI"
-    cp.subject, cp.author = ASIGNATURA, "Universidad Militar Nueva Granada"
-    doc.save(INFORME)
-    print(f"Plantilla de informe: {INFORME}")
-
-
 def main():
     secs = secciones(FUENTE.read_text(encoding="utf-8"))
     docente = "Ing. Henry Roncancio\nDocente Asignatura Inteligencia Artificial"
     construir_guia(secs, docente)
-    construir_informe(secs)
 
 
 if __name__ == "__main__":

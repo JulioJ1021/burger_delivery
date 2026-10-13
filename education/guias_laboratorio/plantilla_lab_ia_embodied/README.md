@@ -77,7 +77,7 @@ python3 embodied_sin_ros.py consultar --escena escena01 --tarea puntos --objeto 
 Cada consulta deja una imagen anotada `capturas/<escena>_<tarea>_resultado.png` y una fila en
 `resultados/resultados.csv`, que son las evidencias E4 a E8 del
 [instrumento ABET de entrega](../../evidencias_abet/INSTRUMENTO_ABET_LAB_IA_01_EMBODIED_AI_GEMINI_ER2.docx)
-(archivo `C2_LIA01_G<grupo>_<codigo1>_<codigo2>_v1.docx`). Ambas carpetas están en
+(archivo `C3_LIA01_G<grupo>_<codigo1>_<codigo2>_v1.docx`). Ambas carpetas están en
 `.gitignore`: adjúntelas al envío del instrumento, no al repositorio del curso.
 
 ## Uso rápido — Opción B (ROS 2)

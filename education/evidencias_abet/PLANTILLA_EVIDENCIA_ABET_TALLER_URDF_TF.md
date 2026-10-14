@@ -56,8 +56,8 @@ Cada criterio produce una medida distinguible para un único indicador principal
 | C1. Modelado URDF y parámetros cinemáticos | 25% | SO1 | Indicador 1.2 (RAE 2): Identifica variables, parámetros cinemáticos y restricciones de articulación para formular y simular modelos de robots y entornos industriales en URDF/XACRO. | E1, E2 y E3 | Individual |
 | C2. Coherencia espacial y validación del árbol TF2 | 20% | SO1 | Indicador 1.1 (RAE 1): Analiza las relaciones entre fenómenos físicos y modelos matemáticos de orientación y transformaciones, validando el árbol de transformaciones (TF2) en sistemas robóticos distribuidos. | E4, E5 y E6 | Individual |
 | C3. Evidencia técnica reproducible y trazabilidad | 20% | SO3 | Indicador 3.2 (RAE 2): Sustenta decisiones de arquitectura, integración de hardware y modelado URDF/XACRO usando evidencias verificables de simulación, laboratorio y repositorio. | E1 a E7 | Individual |
-| C4. Sustentación oral individual de decisiones URDF/TF2 | 20% | SO3 | Indicador 3.2 (RAE 2): Sustenta decisiones de arquitectura, integración de hardware y modelado URDF/XACRO usando evidencias verificables de simulación, laboratorio y repositorio. | E8 | Individual |
-| C5. Diagnóstico técnico en vivo durante la sustentación | 15% | SO6 | Indicador 6.4 (RAE 4 transversal): Interpreta fallas y diagnósticos experimentales aplicando protocolos de diagnóstico por capas (Sintaxis -> TF -> Red -> Lógica) para aislar errores en hardware y software. | E8 | Individual |
+| C4. Sustentación oral individual de decisiones URDF/TF2 | 20% | SO3 | Indicador 3.2 (RAE 2): Sustenta decisiones de arquitectura, integración de hardware y modelado URDF/XACRO usando evidencias verificables de simulación, laboratorio y repositorio. | E8, E9 y E10 | Individual |
+| C5. Diagnóstico técnico en vivo durante la sustentación | 15% | SO6 | Indicador 6.4 (RAE 4 transversal): Interpreta fallas y diagnósticos experimentales aplicando protocolos de diagnóstico por capas (Sintaxis -> TF -> Red -> Lógica) para aislar errores en hardware y software. | E11 | Individual |
 
 ## 3. Registro mínimo de evidencias
 
@@ -70,7 +70,10 @@ Cada criterio produce una medida distinguible para un único indicador principal
 | E5 | Capturas de RViz y consultas tf2_echo que relacionen valores observados con origin xyz/rpy del modelo. |  |
 | E6 | Explicación verificable de carritos como URDF separados, uso de use_static_carts y diferencia frente a la localización dinámica con AprilTags. |  |
 | E7 | Enlace al repositorio o ubicación reproducible, commit evaluado, versiones y conclusión técnica individual. |  |
-| E8 | Registro del evaluador de la sustentación oral individual: preguntas formuladas, síntesis de respuestas, verificación de autoría y resultado del reto de diagnóstico en vivo. |  |
+| E8 | Registro del evaluador de la sustentación oral individual: asistencia, verificación de identidad y autoría, fecha, duración y observaciones. |  |
+| E9 | Respuesta oral individual: explique el flujo URDF/XACRO -> robot_description -> robot_state_publisher -> tf/tf_static y localice la evidencia correspondiente en su entrega. |  |
+| E10 | Respuesta oral individual: interprete una relación entre frames, origin xyz/rpy, links/joints y publicación estática o dinámica; justifique una decisión del modelo Burger Delivery. |  |
+| E11 | Reto de diagnóstico en vivo: registre el escenario planteado, hipótesis, prueba propuesta, resultado interpretado y corrección siguiendo Sintaxis -> TF -> Red -> Lógica. |  |
 
 ## 4. Selección del nivel alcanzado
 
@@ -137,7 +140,7 @@ Marque una sola banda por criterio y registre un valor exacto de 0 a 500. `NA` n
 
 **SO / indicador principal:** SO3 — Indicador 3.2 (RAE 2): Sustenta decisiones de arquitectura, integración de hardware y modelado URDF/XACRO usando evidencias verificables de simulación, laboratorio y repositorio.
 
-**Evidencia:** E8
+**Evidencia:** E8, E9 y E10
 
 | Marque | Nivel | Evidencia observable del nivel |
 |:---:|---|---|
@@ -156,7 +159,7 @@ Marque una sola banda por criterio y registre un valor exacto de 0 a 500. `NA` n
 
 **SO / indicador principal:** SO6 — Indicador 6.4 (RAE 4 transversal): Interpreta fallas y diagnósticos experimentales aplicando protocolos de diagnóstico por capas (Sintaxis -> TF -> Red -> Lógica) para aislar errores en hardware y software.
 
-**Evidencia:** E8
+**Evidencia:** E11
 
 | Marque | Nivel | Evidencia observable del nivel |
 |:---:|---|---|

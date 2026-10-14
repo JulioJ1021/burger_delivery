@@ -120,7 +120,7 @@
       "student_outcome": "SO3",
       "performance_indicator": "Indicador 3.2 (RAE 2): Sustenta decisiones de arquitectura, integración de hardware y modelado URDF/XACRO usando evidencias verificables de simulación, laboratorio y repositorio.",
       "method": "Sustentación oral individual con preguntas de seguimiento y contraste con la entrega",
-      "evidence": "E8",
+      "evidence": "E8, E9 y E10",
       "unit": "individual",
       "descriptors": {
         "N1": "No presenta la sustentación o no puede explicar la autoría, las decisiones ni la evidencia entregada.",
@@ -137,7 +137,7 @@
       "student_outcome": "SO6",
       "performance_indicator": "Indicador 6.4 (RAE 4 transversal): Interpreta fallas y diagnósticos experimentales aplicando protocolos de diagnóstico por capas (Sintaxis -> TF -> Red -> Lógica) para aislar errores en hardware y software.",
       "method": "Reto oral individual de diagnóstico con una inconsistencia propuesta por el docente",
-      "evidence": "E8",
+      "evidence": "E11",
       "unit": "individual",
       "descriptors": {
         "N1": "No identifica una ruta de diagnóstico ni propone una prueba verificable.",
@@ -179,7 +179,19 @@
     },
     {
       "code": "E8",
-      "description": "Registro del evaluador de la sustentación oral individual: preguntas formuladas, síntesis de respuestas, verificación de autoría y resultado del reto de diagnóstico en vivo."
+      "description": "Registro del evaluador de la sustentación oral individual: asistencia, verificación de identidad y autoría, fecha, duración y observaciones."
+    },
+    {
+      "code": "E9",
+      "description": "Respuesta oral individual: explique el flujo URDF/XACRO -> robot_description -> robot_state_publisher -> tf/tf_static y localice la evidencia correspondiente en su entrega."
+    },
+    {
+      "code": "E10",
+      "description": "Respuesta oral individual: interprete una relación entre frames, origin xyz/rpy, links/joints y publicación estática o dinámica; justifique una decisión del modelo Burger Delivery."
+    },
+    {
+      "code": "E11",
+      "description": "Reto de diagnóstico en vivo: registre el escenario planteado, hipótesis, prueba propuesta, resultado interpretado y corrección siguiendo Sintaxis -> TF -> Red -> Lógica."
     }
   ],
   "identification_fields": [

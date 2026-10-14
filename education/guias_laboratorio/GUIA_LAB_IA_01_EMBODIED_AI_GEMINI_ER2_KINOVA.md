@@ -12,6 +12,7 @@
 
 | Descripción del Cambio | Justificación | Fecha |
 |---|---|:---:|
+| Eslabón TF de la cámara en la Ruta B | El driver carga el brazo sin `vision:=true` y el árbol del robot no conecta `camera_link` con `end_effector_link`. La Ruta B remite al Taller URDF y TF2 §11, que explica cómo publicar ese eslabón desde la anfitriona para expresar el objetivo en `base_link`. | 14/10/2026 |
 | Ubicación de la práctica en el Tercer Corte | La práctica se evalúa en el tercer corte: el instrumento ABET registra "Tercer Corte", el aporte L₃ y el nombre de archivo `C3_LIA01_G<grupo>_<codigo1>_<codigo2>_v1.docx`. | 13/10/2026 |
 | Entrega mediante instrumento ABET único con criterios, indicadores y niveles N1–N5 | La plantilla de informe libre no seguía la convención de las demás prácticas. Se reemplaza por `INSTRUMENTO_ABET_LAB_IA_01_EMBODIED_AI_GEMINI_ER2.docx`, que reúne evidencias E1–E9, tablas, cuestionario, Anexo A individual, rúbricas por criterio en escala 0–500 y consolidación ABET. La tabla de RAE de esta guía muestra ahora los indicadores de desempeño. | 13/10/2026 |
 | Versión inicial de la práctica y de su plantilla de código e informe | Lleva a laboratorio la propuesta de razonamiento espacial con Gemini Robotics-ER (`docs/research/EXPERIMENTO_IA_LOCALIZACION_GEMINI.md`, `ros2_setup/PROPUESTA_GEMINI_ER.md`), actualizada al modelo `gemini-robotics-er-2-preview`. Ofrece dos rutas equivalentes: **A sin ROS 2** (RTSP directo) y **B con ROS 2** (driver `kinova_vision`). Incorpora el registro de la profundidad al marco de color, que la propuesta original omitía, y la calibración de la cámara de color, porque el archivo por defecto del driver para 1920×1080 trae un punto principal imposible (`cy = 96.97 px`). | 28/09/2026 |
@@ -259,6 +260,8 @@ La estación anfitriona lleva el brazo a la **pose de observación** (cámara a 
      "{data: '{\"tarea\": \"puntos\", \"objeto\": \"la caja de hamburguesa\"}'}"
    ros2 topic echo /embodied/respuesta --once
    ```
+   Para obtener el objetivo en la base del robot (`ros2 run tf2_ros tf2_echo base_link objetivo_gemini_0`), el árbol TF debe conectar la cámara con el brazo. El driver se lanza sin `vision:=true`, así que la anfitriona publica una vez el eslabón `end_effector_link → camera_link`, como se explica en el [Taller URDF y TF2](../talleres/TALLER_URDF_TF.md) §11.
+
    La llamada a Gemini corre en un **hilo aparte** (`_cb_consulta` → `_trabajar`): explique en el informe qué ocurriría con `/camera/...` si se hiciera dentro del *callback*.
 4. **Guarde las escenas** de la Tabla 2 con la tarea especial `guardar`. El nodo escribe los mismos archivos que `capturar` de la Ruta A (`capturas/<escena>_color.png`, `_depth.png` de 16 bits y `_meta.json`), así que desde aquí las fases 4 a 7 se ejecutan **igual en las dos rutas**, con `embodied_sin_ros.py consultar` sobre las escenas guardadas:
    ```bash

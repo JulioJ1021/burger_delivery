@@ -1,5 +1,9 @@
 # 🎓 Guía Paso a Paso: Descifrando URDF, `robot_description` y TF2 en Burger Delivery
 
+> [!IMPORTANT]
+> **Actualización del Repositorio Privado del Equipo:**
+> Antes de iniciar o continuar con este taller, asegúrese de haber sincronizado su repositorio privado de equipo con los últimos cambios de la base del curso. Consulte la [Guía Oficial de Sincronización y Actualizaciones](../proyectos_evaluables/ACTUALIZACIONES_BASE_CORTE_1.md) para realizar este proceso correctamente.
+
 > [!NOTE]
 > **El modelo vendorizado es el del robot del laboratorio: Gen3 de 6 GDL, pinza Robotiq 2F-85 y
 > módulo de visión en la muñeca** (re-vendorizado desde `kortex_description/arms/gen3/6dof` con
@@ -36,11 +40,6 @@
 > ```
 >
 > Aísla el dominio; no cambies `ROS_AUTOMATIC_DISCOVERY_RANGE` a `LOCALHOST`.
-
-
-> [!IMPORTANT]
-> **Actualización del Repositorio Privado del Equipo:**
-> Antes de iniciar o continuar con este taller, asegúrese de haber sincronizado su repositorio privado de equipo con los últimos cambios de la base del curso. Consulte la [Guía Oficial de Sincronización y Actualizaciones](../proyectos_evaluables/ACTUALIZACIONES_BASE_CORTE_1.md) para realizar este proceso correctamente.
 
 ¡Bienvenido! En esta guía vamos a explorar juntos el corazón de la descripción robótica de nuestro proyecto. El objetivo es que aprendas a leer, validar y ajustar la estructura de `burger_delivery` sin tratar el URDF como un simple "XML decorativo".
 

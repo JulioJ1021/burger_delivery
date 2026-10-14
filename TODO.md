@@ -81,7 +81,8 @@ Este documento centraliza las tareas pendientes, oportunidades de mejora identif
   - [x] Revisar `TALLER_URDF_TF.md` y su formato ABET (v1.1, evidencia E7 de la cámara).
   - [ ] Validar en el robot real el eslabón `end_effector_link → camera_link` (el driver no carga `vision:=true`) y el sentido de los ejes de `camera_color_frame` frente a la imagen.
 - [ ] **Pendientes de la revisión de talleres (2026-09-15)**, documentados en `TROUBLESHOOTING.md` §4:
-  - [ ] `scripts/flight_recorder_telemetry_demo.py` publica 7 articulaciones simuladas; el taller ya advierte que el robot es de 6 GDL. Decidir si se pasa a 6 (cambiaría los valores de referencia medidos del taller de rosbag).
+  - [x] `scripts/flight_recorder_telemetry_demo.py` publica ahora los mismos nombres que el robot real: `joint_1..joint_6` y `robotiq_85_left_knuckle_joint` (2026-10-14). Cada `JointState` crece 24 bytes; el taller de rosbag explica el efecto estimado en sus tamaños de referencia.
+  - [ ] Volver a medir con ROS 2 Jazzy los tamaños de referencia del taller de rosbag (MCAP+Zstd y SQLite3) con el emulador nuevo.
   - [x] `scripts/apriltag_fixed_camera_localizer.py`: el modo real ya se suscribe a `/camera/color/image_raw/compressed`, es compatible con OpenCV 4.6 (antes el detector quedaba en `None` en silencio) y mide en el plano de `tag_mesa` por homografía. Validado con escena sintética en perspectiva (error ≈ 3 mm y 0.55°).
   - [ ] Validar el localizador con la cámara real y los tags de la mesa: requiere tags 36h11 en la mesa (en la verificación del 2026-09-15 no había tags instalados; la cámara sí transmitía, 1920×1080 a ≈ 29 FPS) y que la anfitriona lleve el brazo a la pose de observación. Documentar IDs y tamaño de los tags físicos, que no figuran en el repositorio.
   - [ ] `display.launch.py` publica `/joint_states`, `/tf` y `/robot_description` sin namespace: hoy sólo lo protege la regla de dominio de los talleres. Valorar un namespace o un aviso al arrancar.

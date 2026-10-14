@@ -9,6 +9,9 @@ Sustituye en los URDF del paquete la cadena del brazo de 7 GDL
 ``arms/gen3/7dof``) por la del macro oficial de Kinova para 6 GDL
 (``gen3_bicep_link``, mallas de ``arms/gen3/6dof``), y copia esas mallas al paquete.
 
+Además regenera ``visual/burger_delivery_gen3.urdf`` (la copia para el visor web, con rutas
+relativas) a partir del URDF del paquete, y copia a ``visual/`` las mallas que esa copia usa.
+
 Lo que NO toca: la pinza Robotiq 2F-85 (cuelga de ``gen3_end_effector_link``, que sigue
 existiendo), la cámara de muñeca (cuelga de ``gen3_bracelet_link``, que también sigue),
 la mesa, los tags y el resto de la escena.
@@ -21,7 +24,11 @@ entiende, falla en vez de escribir un URDF a medias.
 Uso::
 
     git clone --depth 1 https://github.com/Kinovarobotics/ros2_kortex.git /tmp/ros2_kortex
-    python3 scripts/revendorizar_gen3_6dof.py /tmp/ros2_kortex/kortex_description
+    python3 scripts/revendorizar_gen3_6dof.py --vision /tmp/ros2_kortex/kortex_description
+
+Con ``--vision`` (lo que tiene el Gen3 del laboratorio) usa el brazalete con módulo de visión y
+añade los frames del macro oficial ``gen3_camera_link``, ``gen3_camera_color_frame`` y
+``gen3_camera_depth_frame``, que cuelgan de ``gen3_end_effector_link``.
 
 Es idempotente: sobre un URDF ya convertido vuelve a escribir la misma cadena.
 """
@@ -40,6 +47,7 @@ URDFS = [
     os.path.join(PAQUETE, 'urdf', 'delivery_scene_fixed.urdf'),
     os.path.join(PAQUETE, 'urdf', 'burger_delivery_gen3.urdf'),
 ]
+VISOR_URDF = os.path.join(REPO, 'visual', 'burger_delivery_gen3.urdf')
 MALLAS_DESTINO = os.path.join(PAQUETE, 'vendor', 'kortex_description', 'arms', 'gen3', '6dof',
                               'meshes')
 URI_MALLAS = 'package://burger_description/vendor/kortex_description/arms/gen3/6dof/meshes/'
@@ -139,6 +147,26 @@ def convertir(urdf_path, elementos):
     return n
 
 
+def copia_visor():
+    """Escribir la copia del visor web: mismo URDF, rutas relativas a ``visual/``."""
+    texto = open(URDFS[1], encoding='utf-8').read()
+    texto = texto.replace('package://burger_description/vendor/', 'vendor/')
+    texto = texto.replace('package://burger_description/meshes/', 'meshes/')
+    if 'package://' in texto:
+        raise ValueError('quedó una ruta package:// sin traducir para el visor web')
+    destino = os.path.join(REPO, 'visual', 'vendor', 'kortex_description', 'arms', 'gen3', '6dof',
+                           'meshes')
+    os.makedirs(destino, exist_ok=True)
+    for nombre in sorted(set(re.findall(r'arms/gen3/6dof/meshes/([^"]+)"', texto))):
+        shutil.copy2(os.path.join(MALLAS_DESTINO, nombre), os.path.join(destino, nombre))
+    faltan = [f for f in re.findall(r'filename="([^"]+)"', texto)
+              if not os.path.exists(os.path.join(REPO, 'visual', f))]
+    if faltan:
+        raise ValueError(f'mallas inexistentes para el visor web: {sorted(set(faltan))}')
+    with open(VISOR_URDF, 'w', encoding='utf-8') as salida:
+        salida.write(texto)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
     parser.add_argument('kortex_description', help='carpeta kortex_description de ros2_kortex')
@@ -161,6 +189,8 @@ def main():
         n = convertir(urdf, elementos)
         print(f'{os.path.relpath(urdf, REPO)}: cadena de 6 GDL escrita '
               f'({n} bloque ros2_control de joint_7 eliminado)')
+    copia_visor()
+    print(f'{os.path.relpath(VISOR_URDF, REPO)}: copia del visor web regenerada')
     return 0
 
 

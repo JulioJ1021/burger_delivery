@@ -1,8 +1,10 @@
 # 🎓 Guía Paso a Paso: Descifrando URDF, `robot_description` y TF2 en Burger Delivery
 
 > [!NOTE]
-> **El modelo vendorizado es de 6 GDL, como el robot del laboratorio** (re-vendorizado desde
-> `kortex_description/arms/gen3/6dof` con `scripts/revendorizar_gen3_6dof.py`).
+> **El modelo vendorizado es el del robot del laboratorio: Gen3 de 6 GDL, pinza Robotiq 2F-85 y
+> módulo de visión en la muñeca** (re-vendorizado desde `kortex_description/arms/gen3/6dof` con
+> `python3 scripts/revendorizar_gen3_6dof.py --vision <ros2_kortex>/kortex_description`). El mismo
+> script regenera la copia del visor web, `visual/burger_delivery_gen3.urdf`.
 >
 > Conviene no confundir dos modelos que coexisten en el workspace:
 >
@@ -72,6 +74,7 @@ Nos enfocaremos en:
 - Los carritos modelados como URDFs separados.
 - La conexión entre URDF, `robot_description`, `robot_state_publisher` y TF2.
 - La localización por AprilTags usando `tag_mesa -> tag_carrito*`.
+- La cámara de muñeca: cómo llevar un punto del marco óptico a la base del brazo, que es lo que necesita el [Laboratorio IA 01 de Embodied AI](../guias_laboratorio/GUIA_LAB_IA_01_EMBODIED_AI_GEMINI_ER2_KINOVA.md) (§11).
 
 **💡 Un consejo antes de empezar:** Tómate tu tiempo. No conviene avanzar de sección si no se cumple su criterio de éxito. Cada paso confirma un concepto que usaremos más adelante. ¡Vamos allá!
 
@@ -271,7 +274,7 @@ Verifica en el archivo:
 - `gen3_joint_2` es `revolute`, usa `axis="0 0 1"` y tiene límites `lower="-2.24"` y `upper="2.24"`.
 - `gen3_joint_3` (±2.57) y `gen3_joint_5` (±2.09) también son `revolute` con tope.
 - `gen3_joint_1`, `gen3_joint_4` y `gen3_joint_6` son `continuous`: giran sin límite en el modelo.
-- La pinza usa `mimic` con `multiplier="-1"` para que el dedo derecho imite al izquierdo en sentido opuesto.
+- La pinza Robotiq 2F-85 tiene **una sola articulación actuada**, `gen3_robotiq_85_left_knuckle_joint` (`revolute`, 0 a 0.8 rad). Las otras cinco (`right_knuckle`, los dos `inner_knuckle` y los dos `finger_tip`) la imitan con `mimic`; las del lado opuesto usan `multiplier="-1"` para cerrar en sentido contrario. Por eso no suman grados de libertad: el modelo completo tiene 6 GDL del brazo más 1 de la pinza.
 
 Nota de consistencia: son los mismos límites que usa `burger_kinova_reference/config/kinova_connection.yaml` (`joint_min_rad`/`joint_max_rad`), tomados del macro oficial de 6 GDL.
 
@@ -533,7 +536,103 @@ Abre `vision_setup/LOCALIZACION_APRILTAG.md` y verifica que la cadena cinemátic
 3.  **Ejercicio Mental:** Si la cámara ve que el `tag_mesa` está a 1 metro de ella (en Z) y el `tag_carrito1` está a 1.2 metros (en Z), ¿a qué distancia está el carrito de la mesa aproximadamente?
 4.  **En el URDF:** Mira el joint `table_to_tag_mesa`. Si movemos físicamente el AprilTag de la mesa pero no actualizamos este joint, ¿qué pasará con la ubicación de los carritos en RViz?
 
-## 11. Lista de Chequeo Final (Checklist)
+## 11. La Cámara de Muñeca: del Píxel a la Base del Brazo (puente al Lab IA 01)
+
+### 🧠 El Concepto
+En el [Laboratorio IA 01](../guias_laboratorio/GUIA_LAB_IA_01_EMBODIED_AI_GEMINI_ER2_KINOVA.md), Gemini señala un objeto en la imagen y el pipeline lo convierte en un punto `(X, Y, Z)` en metros. Ese punto está en el **marco óptico de la cámara de color**, que se mueve con la muñeca. Para que un planificador lo use, hay que expresarlo en la **base del brazo**, y eso es exactamente lo que hace TF2 si el árbol está completo.
+
+Dos convenciones de ejes conviven en ROS (REP 103):
+
+| Marco | X | Y | Z | Dónde lo verás |
+|---|---|---|---|---|
+| **Cuerpo** (body) | adelante | izquierda | arriba | `gen3_base_link`, `table_link`, `map` |
+| **Óptico** | derecha en la imagen | abajo en la imagen | hacia donde mira la cámara | marcos de imagen: `*_optical_frame` y los de `kinova_vision` |
+
+El paso de uno a otro es la rotación `rpy="-1.5708 0 -1.5708"`. Búscala en las juntas `wrist_mounted_camera_*_optical_joint` del URDF.
+
+El módulo de visión integrado del Gen3 añade tres marcos fijos, tomados del macro oficial de Kinova y colgados de `gen3_end_effector_link`:
+
+| Marco | `origin xyz` respecto a `gen3_end_effector_link` | `rpy` | Uso |
+|---|---|---|---|
+| `gen3_camera_link` | `0 0.05639 -0.00305` | `π π 0` | Raíz del módulo de visión |
+| `gen3_camera_color_frame` | `0 0.05639 -0.00305` | `π π 0` | Imágenes de color: aquí queda el punto 3D del Lab IA 01 |
+| `gen3_camera_depth_frame` | `0.0275 0.066 -0.00305` | `π π 0` | Sensor de profundidad (RealSense D410) |
+
+`rpy = π π 0` equivale a girar 180° alrededor de Z: el eje Z del marco de la cámara coincide con el de la herramienta, que es hacia donde mira la cámara.
+
+> [!NOTE]
+> Los frames `wrist_mounted_camera_*` que cuelgan de `gen3_bracelet_link` modelan una cámara RealSense externa genérica. **No son** el módulo de visión integrado. Sirven aquí para ver la convención óptica.
+
+### 🔍 Revisión en el Proyecto
+```bash
+rg -n 'gen3_camera|_module"|optical_joint' burger_description/urdf/delivery_scene_fixed.urdf
+```
+
+### 🛠️ Ejercicio 1: El punto de Gemini en la base, sin robot
+1.  Lanza `ros2 launch burger_description display.launch.py use_static_carts:=true` y deja **todos los deslizadores en 0**. En la pose cero el brazo queda vertical.
+2.  Consulta la cámara respecto a la base:
+    ```bash
+    ros2 run tf2_ros tf2_echo gen3_base_link gen3_camera_color_frame
+    ```
+    **Valor esperado en la pose cero:** traslación `[0.000, -0.055, 1.174]` m y rotación identidad `[0, 0, 0, 1]`.
+3.  Supón que el Lab IA 01 devolvió el punto `P = (0.10, 0.05, 0.60)` m en `gen3_camera_color_frame`. Calcúlalo a mano con la matriz homogénea del paso 2: `P_base = R · P + t`. Debe darte `(0.100, -0.005, 1.774)` m.
+4.  Compruébalo con TF2. Ejecuta este script en otra terminal con el mismo dominio:
+    ```python
+    import rclpy
+    from geometry_msgs.msg import PointStamped
+    from tf2_ros import Buffer, TransformListener
+    import tf2_geometry_msgs  # noqa: F401  registra la transformación de PointStamped
+
+    rclpy.init()
+    nodo = rclpy.create_node('punto_a_base')
+    buffer = Buffer()
+    TransformListener(buffer, nodo)
+    p = PointStamped()
+    p.header.frame_id = 'gen3_camera_color_frame'
+    p.point.x, p.point.y, p.point.z = 0.10, 0.05, 0.60
+    while rclpy.ok():
+        rclpy.spin_once(nodo, timeout_sec=0.1)
+        if buffer.can_transform('gen3_base_link', p.header.frame_id, rclpy.time.Time()):
+            print(buffer.transform(p, 'gen3_base_link').point)
+            break
+    ```
+5.  Mueve `gen3_joint_6` y repite el paso 2. **Predice antes:** ¿cambia solo la rotación o también la traslación? Pista: la cámara no está sobre el eje de la junta, sino desplazada 5.6 cm.
+
+### 🛠️ Ejercicio 2: El árbol del robot real (Ruta B del Lab IA 01)
+Con el robot, los nombres son los del driver, sin prefijo `gen3_`. El árbol tiene un hueco que debes conocer antes de usar TF en el Lab IA 01:
+
+- El driver (`kinova_connection.launch.py`) carga `kortex_description` **sin** `vision:=true`, así que publica `base_link → … → end_effector_link` y la pinza, **pero ningún marco de cámara**.
+- `kinova_vision.launch.py` publica `camera_link → camera_color_frame` y `camera_link → camera_depth_frame`, pero **nadie conecta `camera_link` con el brazo**. El launch reducido `kinova_vision_compressed.launch.py` ni siquiera publica esos dos.
+
+1.  **Diagnostica**, con el driver y la cámara activos en la estación anfitriona:
+    ```bash
+    ros2 run tf2_ros tf2_echo base_link camera_color_frame
+    ```
+    Fallará con un mensaje como *"…not part of the same tree…"*: dos árboles sin conexión.
+2.  **Repara**: una sola estación, la anfitriona, publica el eslabón que falta con los valores oficiales. Si corre `kinova_vision.launch.py`, conecta `camera_link`:
+    ```bash
+    ros2 run tf2_ros static_transform_publisher --x 0 --y 0.05639 --z -0.00305 \
+        --roll 3.141592653589793 --pitch 3.141592653589793 --yaw 0 \
+        --frame-id end_effector_link --child-frame-id camera_link
+    ```
+    Si corre `kinova_vision_compressed.launch.py`, usa `--child-frame-id camera_color_frame` con los mismos valores. Compruébalo antes con `ros2 run tf2_ros tf2_echo camera_link camera_color_frame`.
+3.  **Verifica**: repite el paso 1, que ahora debe responder. El nodo del Lab IA 01 publica cada objeto como `objetivo_gemini_<i>` colgado de `camera_color_frame`, así que con el eslabón puesto obtienes el objetivo en la base del robot:
+    ```bash
+    ros2 run tf2_ros tf2_echo base_link objetivo_gemini_0
+    ```
+
+> [!WARNING]
+> **Un solo padre por frame.** No publiques este eslabón si alguien lanza el driver con `vision:=true`: `camera_color_frame` tendría dos padres y TF2 lo rechazaría. Tampoco lo publiquen dos estaciones a la vez. Es la misma regla de unicidad que la del driver.
+
+> [!NOTE]
+> **Dos fuentes de Kinova no coinciden.** El macro oficial ubica el sensor de profundidad 27.5 mm y 9.6 mm del de color. El `kinova_vision.launch.py` usa 19.5 mm y 5 mm. El Lab IA 01 no depende de esa TF: registra la profundidad con los extrínsecos de `config_camara_kinova.json`, que se leen del robot con la Kortex API.
+
+### ✅ Criterios de Éxito
+- Explicas la diferencia entre un marco de cuerpo y un marco óptico, y ubicas la rotación que los relaciona.
+- Obtienes con `tf2_echo` la pose de `gen3_camera_color_frame` en la pose cero y transformas un punto a `gen3_base_link`, a mano y con TF2, con el mismo resultado.
+- Explicas por qué en el robot real hace falta el eslabón `end_effector_link → camera_link` y por qué debe publicarlo una sola estación.
+
+## 12. Lista de Chequeo Final (Checklist)
 
 Antes de dar por válida tu configuración, asegúrate de haber hecho este recorrido:
 1.  [ ] Ejecutar `xmllint` y `check_urdf` sin errores.
@@ -541,7 +640,9 @@ Antes de dar por válida tu configuración, asegúrate de haber hecho este recor
 3.  [ ] Verificar en RViz que `map` es el Fixed Frame.
 4.  [ ] Confirmar que el brazo Kinova se mueve en el rango esperado (Joint State Publisher).
 5.  [ ] Verificar que la pinza Robotiq abre y cierra con `mimic`.
-6.  [ ] Generar `view_frames` y validar la jerarquía completa.
+6.  [ ] Generar `view_frames` y validar la jerarquía completa, incluidos los `gen3_camera_*` bajo `gen3_end_effector_link`.
+7.  [ ] Obtener `gen3_base_link → gen3_camera_color_frame` en la pose cero y transformar un punto de la cámara a la base.
+8.  [ ] (Con robot) Diagnosticar y reparar el eslabón `end_effector_link → camera_link` desde la estación anfitriona.
 
 ## ⚠️ ¡No caigas en la trampa! (Errores Comunes)
 - **Olvidar reconstruir:** Cambiar el URDF en `src` y esperar que se vea en RViz sin hacer `colcon build`.
@@ -550,6 +651,7 @@ Antes de dar por válida tu configuración, asegúrate de haber hecho este recor
 - **Doble publicación:** Usar `use_static_carts:=true` al mismo tiempo que el nodo real de AprilTags.
 - **Offsets mal ubicados:** Corregir un error de la mesa moviendo el carrito. Siempre calibra de la raíz hacia las hojas.
 - **Colisiones complejas:** Usar mallas CAD pesadas para detección de choques en lugar de cajas simples.
+- **Confundir marcos de cámara:** Interpretar un punto del marco óptico (Z hacia delante) como si estuviera en un marco de cuerpo (Z hacia arriba), o transformarlo sin que el árbol conecte la cámara con el brazo.
 
 ## 🏆 Resultado Esperado (Lo que ahora sabes)
 Al terminar esta guía, eres capaz de:
@@ -558,5 +660,6 @@ Al terminar esta guía, eres capaz de:
 - Entender por qué separamos la escena de los objetos móviles.
 - Ajustar offsets físicos (`xyz`, `rpy`) para que el mundo virtual coincida con el real.
 - Preparar el entorno para la planificación de movimientos con MoveIt 2.
+- Llevar un punto detectado por la cámara de muñeca a la base del brazo, que es el paso que conecta la percepción del Lab IA 01 con la acción.
 
 ¡Excelente trabajo! Estás listo para el siguiente paso: **¡Control e Inteligencia con MoveIt 2!**

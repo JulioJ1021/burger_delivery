@@ -1,8 +1,11 @@
 # Burger Description Package
 
 > [!NOTE]
-> **El modelo vendorizado es de 6 GDL, como el robot del laboratorio** (re-vendorizado desde
-> `kortex_description/arms/gen3/6dof` con `scripts/revendorizar_gen3_6dof.py`).
+> **El modelo vendorizado es el del robot del laboratorio: Gen3 de 6 GDL, pinza Robotiq 2F-85 y
+> módulo de visión** (re-vendorizado desde `kortex_description/arms/gen3/6dof` con
+> `scripts/revendorizar_gen3_6dof.py --vision`, que también regenera `visual/burger_delivery_gen3.urdf`).
+> Los frames de la cámara, `gen3_camera_link`, `gen3_camera_color_frame` y `gen3_camera_depth_frame`,
+> cuelgan de `gen3_end_effector_link`.
 >
 > Conviene no confundir dos modelos que coexisten en el workspace:
 >

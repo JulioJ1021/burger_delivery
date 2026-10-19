@@ -624,7 +624,10 @@
   <joint name="table_to_world" type="fixed">
     <parent link="table_link" />
     <child link="world" />
-    <origin xyz="0.20 0.30 0.00" rpy="0 0 0" />
+    <!-- z = 0.025: la base del Gen3 se apoya en la cara SUPERIOR de la mesa (caja de 0.05 m
+         centrada en table_link). Con z = 0 quedaba 25 mm dentro de la mesa y MoveIt declaraba
+         en colisión el estado inicial. Misma altura que tag_mesa. -->
+    <origin xyz="0.20 0.30 0.025" rpy="0 0 0" />
   </joint>
   <link name="world" />
   <material name="aluminum">

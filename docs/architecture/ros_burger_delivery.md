@@ -172,7 +172,7 @@ ros2 run tf2_ros static_transform_publisher \
   robot_X/base_link robot_X/tray_frame
 
 ros2 run tf2_ros static_transform_publisher \
-  0.20 0.30 0.00 0 0 0 \
+  0.20 0.30 0.025 0 0 0 \
   table_link world
 ```
 
@@ -279,7 +279,7 @@ Un URDF mínimo que codifica este árbol de transformaciones puede lucir así (t
   <joint name="table_to_world" type="fixed">
     <parent link="table_link"/>
     <child link="world"/>
-    <origin xyz="0.20 0.30 0.00" rpy="0 0 0"/>
+    <origin xyz="0.20 0.30 0.025" rpy="0 0 0"/>
   </joint>
 </robot>
 ```
@@ -304,7 +304,7 @@ La siguiente tabla resume cada frame del árbol y su función. Las poses indicad
 | `table_link` | `map` | fixed | Mesa física donde se monta Kinova y staging. | (0.80, -1.00, 0.80), (0,0,0) |
 | `staging_area` | `map` | fixed | Referencia de la mesa/zona de preparación. | (0.80, 0.00, 0.00), (0,0,0) |
 | `delivery_slot_1` | `staging_area` | fixed | Slot donde el Kinova deposita la bandeja. | (0.00, 0.40, 0.50), (0,0,0) |
-| `world` | `table_link` | fixed | Frame auxiliar del URDF oficial Kinova (solo escena compuesta). | (0.20, 0.30, 0.00), (0,0,0) |
+| `world` | `table_link` | fixed | Frame auxiliar del URDF oficial Kinova (solo escena compuesta). | (0.20, 0.30, 0.025), (0,0,0) |
 | `kinova_base_link` | `table_link` | fixed | Base del Kinova Gen3 (versión visual). | (1.20, 0.30, 0.50), (0,0,0) |
 | `kinova_tool_frame` | `kinova_base_link` | floating/fixed | Brida/herramienta del brazo. | En demo visual: fijo (0,0,0); en hardware: variable (cinemática). |
 | `burger_grip_frame` | `kinova_tool_frame` | fixed | Frame de pinzado; offset del tool para grasp/place. | (0, 0, 0.18), (0,0,0) |

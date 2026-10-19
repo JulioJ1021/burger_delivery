@@ -38,6 +38,9 @@ setup(
             'burger_kinova_reference.safe_trajectory_client:main',
             'safe_sequence_client = '
             'burger_kinova_reference.safe_sequence_client:main',
+            'moveit_safe_executor = '
+            'burger_kinova_reference.moveit_safe_executor:main',
+            'escena_moveit = burger_kinova_reference.escena_moveit:main',
         ],
     },
 )

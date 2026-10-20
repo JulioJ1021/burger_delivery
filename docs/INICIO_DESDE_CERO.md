@@ -11,7 +11,7 @@ referencia que valida cada movimiento antes de enviarlo.
 | Etapa | Qué haces | Necesitas el robot | Hito ✅ |
 |:---:|---|:---:|---|
 | 0 | Entender los términos y las reglas de seguridad | No | Sabes qué es la estación anfitriona |
-| 1 | Crear el workspace y clonar el proyecto | No | `~/ros2_ws/src/burger_delivery` existe |
+| 1 | Instalar Antigravity, Ubuntu en WSL y abrir el proyecto como workspace | No | Antigravity conectado a Ubuntu con `~/ros2_ws` abierto |
 | 2 | Instalar ROS 2 Jazzy | No | `talker` y `listener` se comunican |
 | 3 | Agregar el driver de Kinova y las dependencias | No | `rosdep` termina sin errores |
 | 4 | Compilar | No | Aparecen los ejecutables de `burger_kinova_reference` |
@@ -43,15 +43,72 @@ hacen en el laboratorio, con autorización del responsable.
 > junto a la parada de emergencia. Toda prueba física empieza en **modo seco**, que valida el
 > movimiento sin enviarlo. Nunca lances un segundo driver contra el mismo robot.
 
-**Sistema operativo.** Ubuntu 24.04 nativo es lo recomendado. WSL2 sobre Windows también
-funciona para las etapas 1 a 6, con dos advertencias: el daemon de la CLI de ROS 2 se bloquea
-con frecuencia ([`TROUBLESHOOTING.md`](../TROUBLESHOOTING.md) §1) y la estación anfitriona por
-WSL2 muestra más retardos que una nativa. Si usas WSL, revisa también
-[`ros2_setup/verificar_ros2.md`](../ros2_setup/verificar_ros2.md).
+**Entorno de trabajo.** La ruta asume un computador con **Windows 11**, el editor **Google
+Antigravity** y **Ubuntu 24.04 dentro de WSL2**, que es el entorno del curso: Antigravity es el
+editor, y su agente ayuda a instalar y configurar. Si ya usas **Ubuntu 24.04 nativo**, sáltate
+los pasos 1.2 y 1.3. Con WSL ten presentes dos cosas: el daemon de la CLI de ROS 2 se bloquea
+con frecuencia ([`TROUBLESHOOTING.md`](../TROUBLESHOOTING.md) §1), y una estación anfitriona en
+WSL2 muestra más retardos que una nativa.
 
 ---
 
-## Etapa 1 — Crear el workspace y clonar el proyecto
+## Etapa 1 — Antigravity, Ubuntu en WSL y el proyecto en el workspace
+
+### 1.1 Instalar Antigravity
+
+Descarga **Google Antigravity** desde su sitio oficial, [antigravity.google](https://antigravity.google),
+instálalo en Windows e inicia sesión con tu cuenta de Google.
+
+### 1.2 Pedirle al agente que instale Ubuntu 24.04 en WSL
+
+Abre el panel del agente de Antigravity y pídele la instalación. Puedes copiar este mensaje:
+
+> Instala WSL2 con la distribución **Ubuntu 24.04** en este Windows. Muéstrame cada comando
+> antes de ejecutarlo. Usa `wsl --install -d Ubuntu-24.04`; si WSL ya está instalado, agrega
+> solo la distribución. Después crea o edita `%USERPROFILE%\.wslconfig` para que contenga
+> `[wsl2]` y `networkingMode=mirrored`, ejecuta `wsl --shutdown` y dime si debo reiniciar Windows.
+
+Revisa y aprueba cada comando que proponga. Hay tres cosas que debes hacer tú:
+
+- **Permisos de administrador.** Instalar WSL los necesita. Si el agente no puede elevarse,
+  ejecuta tú el de instalación en una PowerShell **como administrador**:
+  ```powershell
+  wsl --install -d Ubuntu-24.04
+  ```
+- **Reiniciar Windows**, si la instalación lo pide.
+- **Crear tu usuario de Linux.** La primera vez que se abre Ubuntu pide un nombre de usuario y una
+  contraseña. Abre **Ubuntu 24.04** desde el menú Inicio y créalos ahí; esa contraseña es la que
+  pedirá `sudo` en las etapas siguientes.
+
+El modo `mirrored` hace que Ubuntu use la misma red que Windows. Sin él, desde WSL no verías al
+robot ni a las demás estaciones (etapa 7). Requiere Windows 11 22H2 o posterior: compruébalo con
+`winver`. Detalle en [`network_setup/ROS2_NETWORK_CONFIG.md`](../network_setup/ROS2_NETWORK_CONFIG.md) §2.
+
+Comprueba en PowerShell:
+
+```powershell
+wsl -l -v      # debe listar Ubuntu-24.04 con VERSION 2
+```
+
+### 1.3 Conectar Antigravity con Ubuntu
+
+Abre la paleta de comandos (`Ctrl+Shift+P`) y elige **Connect to WSL**. El nombre exacto
+depende de la versión de Antigravity; si no aparece, instala la extensión **Open Remote - WSL**
+desde el panel de extensiones
+([`ros2_setup/verificar_ros2.md`](../ros2_setup/verificar_ros2.md) §5). Al conectarse, la
+esquina inferior izquierda muestra `WSL: Ubuntu-24.04`, y la terminal integrada abre Linux:
+
+```bash
+lsb_release -a     # Description: Ubuntu 24.04 ... LTS
+```
+
+Si no logras la conexión remota, abre al menos una terminal con el perfil **Ubuntu**
+([`verificar_ros2.md`](../ros2_setup/verificar_ros2.md) §1) y continúa: el resto de la ruta
+funciona igual.
+
+### 1.4 Clonar el proyecto y abrirlo como workspace
+
+En la terminal de Ubuntu (o pidiéndoselo al agente con estos mismos comandos):
 
 ```bash
 sudo apt update && sudo apt install -y git
@@ -60,12 +117,28 @@ cd ~/ros2_ws/src
 git clone https://github.com/roncanciovl/burger_delivery.git
 ```
 
+Después abre en Antigravity la carpeta **`~/ros2_ws`** (*File → Open Folder*, con Antigravity
+conectado a WSL). Así el editor y el agente ven todo el workspace, incluido el driver de Kinova
+que se agregará en la etapa 3.
+
+> [!WARNING]
+> Clona **dentro de Linux** (`/home/<usuario>/ros2_ws`), nunca en una carpeta de Windows como
+> `/mnt/c/...`. Allí la compilación es mucho más lenta, los permisos fallan y el enlace simbólico
+> de mallas de `burger_description` se rompe.
+
 > [!NOTE]
 > Si eres estudiante del curso, clona el **repositorio privado de tu equipo** en lugar del
 > público, y mantenlo al día con la [guía de sincronización](../education/proyectos_evaluables/ACTUALIZACIONES_BASE_CORTE_1.md).
 > La carpeta debe seguir llamándose `burger_delivery`: todas las rutas de las guías la usan.
 
-✅ **Listo cuando** `ls ~/ros2_ws/src/burger_delivery` muestra `burger_description`,
+> [!CAUTION]
+> **El agente puede ayudarte en las etapas 2 a 6**, siempre que revises cada comando antes de
+> aprobarlo. **En las etapas 8 y 9 no**: con el robot real, los comandos los escribe y los ejecuta
+> una persona, con la autorización del responsable del laboratorio. No delegues en un agente el
+> movimiento del robot.
+
+✅ **Listo cuando** Antigravity muestra `WSL: Ubuntu-24.04` (o tienes una terminal de Ubuntu
+abierta) y el explorador muestra `ros2_ws/src/burger_delivery` con `burger_description`,
 `burger_kinova_reference`, `scripts` y `README.md`.
 
 ---
@@ -173,6 +246,8 @@ export ROS_DOMAIN_ID=42          # cualquier número entre 1 y 101 distinto del 
 ros2 launch burger_description display.launch.py use_static_carts:=true
 ```
 
+En WSL, RViz se abre como una ventana de Windows gracias a WSLg, incluido en Windows 11.
+
 ✅ **Listo cuando** RViz muestra la mesa, el Kinova Gen3 de **6 GDL** con la pinza Robotiq 2F-85
 y los dos carritos, y los deslizadores de la ventana *Joint State Publisher* mueven el brazo.
 
@@ -262,6 +337,14 @@ ping -c 4 192.168.1.10    # el robot
 
 Si tu IP no empieza por `192.168.1.`, estás en otra red (por ejemplo, la institucional):
 conéctate al SSID `ros2`. Detalles en [`network_setup/ROS2_NETWORK_CONFIG.md`](../network_setup/ROS2_NETWORK_CONFIG.md).
+
+> [!IMPORTANT]
+> **En WSL**, `ip -brief addr` dentro de Ubuntu debe mostrar la **misma IP que Windows**
+> (`192.168.1.x`). Si muestra una `172.x.x.x`, WSL sigue en modo NAT: falta el modo `mirrored`
+> del paso 1.2, y aunque el `ping` funcione, ROS 2 no descubrirá al robot ni a las demás
+> estaciones. Si con `mirrored` activo los nodos siguen sin verse, falta la excepción del firewall
+> de Windows del [Laboratorio 01](../education/guias_laboratorio/GUIA_LAB_01_RED_ROS2_TALKER_LISTENER.md)
+> (paso 5 de la Fase 1).
 
 Desde aquí, en **todas** las terminales de **todas** las estaciones, carga el entorno del curso
 y reinicia el daemon de la CLI, que queda atado al dominio con el que arrancó:

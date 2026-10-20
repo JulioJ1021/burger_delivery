@@ -40,8 +40,8 @@ Este repositorio funciona como el paquete de descripción (`burger_description`)
 
 > [!TIP]
 > **¿Primera vez en el proyecto?** Sigue la [**Ruta de inicio desde cero**](docs/INICIO_DESDE_CERO.md):
-> diez etapas con su comprobación, desde instalar ROS 2 Jazzy hasta el primer movimiento seguro del
-> Kinova Gen3 con `burger_kinova_reference`, pasando por la simulación del robot.
+> diez etapas con su comprobación, desde instalar Antigravity y Ubuntu en WSL hasta el primer
+> movimiento seguro del Kinova Gen3 con `burger_kinova_reference`, pasando por la simulación del robot.
 
 ### Requisitos Previos
 - Ubuntu 24.04 con **ROS 2 Jazzy** instalado. (Si no lo tienes, revisa `install_ros2.sh` y la guía en `ros2_setup/`).

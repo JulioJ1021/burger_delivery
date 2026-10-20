@@ -38,7 +38,7 @@ docs/
 
 ## 🧭 Para empezar
 
-- [**Ruta de inicio desde cero**](INICIO_DESDE_CERO.md): instalación, compilación, robot simulado y primer movimiento real del Kinova Gen3 con `burger_kinova_reference`, en diez etapas verificables.
+- [**Ruta de inicio desde cero**](INICIO_DESDE_CERO.md): Antigravity y Ubuntu en WSL, instalación, compilación, robot simulado y primer movimiento real del Kinova Gen3 con `burger_kinova_reference`, en diez etapas verificables.
 
 ---
 

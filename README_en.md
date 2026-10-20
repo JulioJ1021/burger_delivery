@@ -40,7 +40,7 @@ This repository serves as the description package (`burger_description`), experi
 
 > [!TIP]
 > **New to the project?** Follow the [**from-scratch onboarding route**](docs/INICIO_DESDE_CERO.md)
-> (in Spanish): ten checked stages, from installing ROS 2 Jazzy to the first safe motion of the
+> (in Spanish): ten checked stages, from installing Antigravity and Ubuntu on WSL to the first safe motion of the
 > Kinova Gen3 with `burger_kinova_reference`, including a simulated robot run.
 
 ### Prerequisites

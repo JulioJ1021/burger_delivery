@@ -59,6 +59,24 @@ WSL2 muestra más retardos que una nativa.
 Descarga **Google Antigravity** desde su sitio oficial, [antigravity.google](https://antigravity.google),
 instálalo en Windows e inicia sesión con tu cuenta de Google.
 
+**Cómo ejecutar comandos en la terminal de Antigravity.** Toda la guía funciona así:
+
+1. **Abre una terminal:** menú **Terminal → New Terminal**. Aparece abajo, en el panel inferior.
+2. **Elige dónde se ejecuta:** con la flecha junto al botón **`+`** de ese panel eliges el perfil.
+   **PowerShell** ejecuta en Windows (el prompt empieza por `PS C:\`); **Ubuntu** ejecuta en
+   Linux (el prompt es `usuario@equipo:~$`) y aparece después del paso 1.2. Cada bloque de la
+   guía dice cuál usar; si no lo dice, es Ubuntu.
+3. **Copia el bloque** de la guía, pégalo en la terminal con `Ctrl+V` (o clic derecho) y pulsa
+   `Enter`. Cambia antes lo que esté entre `< >`, como `<usuario>`. Lo que va después de `#` es
+   un comentario con el resultado esperado: no hace falta escribirlo.
+4. **Mientras se ejecuta**, espera a que vuelva a aparecer el prompt. Si pide la contraseña de
+   `sudo`, escríbela aunque no se vea nada y pulsa `Enter`. `Ctrl+C` detiene el comando.
+5. **Cuando la guía dice «terminal 1» y «terminal 2»**, abre otra con el botón **`+`**: cada una
+   es una pestaña del panel y las dos funcionan al mismo tiempo.
+
+Cuando el agente propone un comando, lo ejecuta en su propia terminal solo después de que lo
+apruebas: lee el comando antes de aceptarlo.
+
 ### 1.2 Pedirle al agente que instale Ubuntu 24.04 en WSL
 
 Abre el panel del agente de Antigravity y pídele la instalación. Puedes copiar este mensaje:

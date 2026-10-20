@@ -16,10 +16,10 @@ referencia que valida cada movimiento antes de enviarlo.
 | 3 | Agregar el driver de Kinova y las dependencias | No | `rosdep` termina sin errores |
 | 4 | Compilar | No | Aparecen los ejecutables de `burger_kinova_reference` |
 | 5 | Ver la celda en RViz | No | Ves la mesa y el brazo de 6 GDL con pinza |
-| 6 | Robot simulado y primer movimiento simulado | No | La muñeca gira en RViz y el cliente termina en `SUCCESSFUL` |
+| 6 | Robot simulado y primer movimiento simulado | No | El brazo gira sobre su base en RViz y el cliente termina en `SUCCESSFUL` |
 | 7 | Entrar a la red del laboratorio | Sí (red) | `ping 192.168.1.10` responde |
 | 8 | Conectar el robot real sin movimiento | Sí | `[TRANSICIÓN] INICIO -> OK` con el robot real |
-| 9 | Primer movimiento real | Sí | El brazo gira la muñeca y el cliente termina en `SUCCESSFUL` |
+| 9 | Primer movimiento real | Sí | El brazo gira sobre su base y el cliente termina en `SUCCESSFUL` |
 | 10 | Cerrar limpiamente | Sí | Ninguna sesión queda abierta con el robot |
 
 Las etapas 1 a 6 se hacen en cualquier computador y en cualquier lugar. Las etapas 7 a 10 se
@@ -286,10 +286,13 @@ ros2 topic echo /joint_states --once
 Anota la posición de cada articulación **por su nombre** (`joint_1` … `joint_6`). El orden del
 mensaje no tiene por qué ser 1, 2, 3…: guíate por el campo `name`.
 
-**Terminal 2 — prepara la meta.** Copia las seis posiciones y cambia solo `joint_6` sumándole
-`0.10` rad. `joint_6` gira la pinza sobre su eje: es el movimiento de menor riesgo. Por
-ejemplo, si leíste `joint_1 … joint_6 = [0.0, 0.26, 3.14, -2.27, 0.0, 0.96]`, la meta es
-`[0.0, 0.26, 3.14, -2.27, 0.0, 1.06]`. **Usa los números de tu lectura**, no los del ejemplo.
+**Terminal 2 — prepara la meta.** Copia las seis posiciones y cambia solo `joint_1`, la base,
+sumándole `0.25` rad (unos 14°). Es un giro de todo el brazo alrededor de su eje vertical: se ve
+con claridad y queda por debajo del límite de `0.35` rad por movimiento que impone el cliente
+(`max_joint_delta_rad`). Un delta positivo gira el brazo en sentido antihorario visto desde
+arriba. Por ejemplo, si leíste `joint_1 … joint_6 = [0.0, 0.26, 3.14, -2.27, 0.0, 0.96]`, la
+meta es `[0.25, 0.26, 3.14, -2.27, 0.0, 0.96]`. **Usa los números de tu lectura**, no los del
+ejemplo.
 
 ```bash
 CFG=$(ros2 pkg prefix burger_kinova_reference)/share/burger_kinova_reference/config/kinova_connection.yaml
@@ -297,7 +300,7 @@ CFG=$(ros2 pkg prefix burger_kinova_reference)/share/burger_kinova_reference/con
 # 1) Modo seco: valida todo y NO envía nada
 ros2 run burger_kinova_reference safe_trajectory_client --ros-args --params-file $CFG \
   -p use_fake_hardware:=true -p enable_motion:=true -p dry_run:=true \
-  -p "safe_joint_positions_rad:=[<j1>, <j2>, <j3>, <j4>, <j5>, <j6 + 0.10>]"
+  -p "safe_joint_positions_rad:=[<j1 + 0.25>, <j2>, <j3>, <j4>, <j5>, <j6>]"
 echo $?
 ```
 
@@ -309,12 +312,12 @@ casi siempre es un número mal copiado, que supera `max_joint_delta_rad` (0.35 r
 # 2) Envío al robot simulado: el mismo comando con dry_run:=false
 ros2 run burger_kinova_reference safe_trajectory_client --ros-args --params-file $CFG \
   -p use_fake_hardware:=true -p enable_motion:=true -p dry_run:=false \
-  -p "safe_joint_positions_rad:=[<j1>, <j2>, <j3>, <j4>, <j5>, <j6 + 0.10>]"
+  -p "safe_joint_positions_rad:=[<j1 + 0.25>, <j2>, <j3>, <j4>, <j5>, <j6>]"
 ```
 
 Responde `si` cuando pregunte `¿Enviar meta al servidor de acción? [si/no]`.
 
-✅ **Listo cuando** la muñeca gira en RViz, el cliente informa `SUCCESSFUL` y `echo $?` da `0`.
+✅ **Listo cuando** el brazo gira sobre su base en RViz, el cliente informa `SUCCESSFUL` y `echo $?` da `0`.
 Detén la terminal 1 con `Ctrl+C`.
 
 ---
@@ -403,18 +406,21 @@ Es el mismo procedimiento de la etapa 6, ahora sobre el robot físico. **Lo ejec
 persona** y el resto del laboratorio lo observa.
 
 1. **Pide autorización** al responsable del laboratorio. Despeja 1.2 m alrededor del brazo y
-   ubica a una persona junto a la parada de emergencia.
+   ubica a una persona junto a la parada de emergencia. Girar `joint_1` desplaza **todo** el
+   brazo hacia un lado: confirma que en ese arco no haya personas, cables, portátiles ni sillas.
 2. **Lee la pose real** con `ros2 topic echo /joint_states --once`. Con el robot real el mensaje
    trae también la articulación de la pinza (`robotiq_85_left_knuckle_joint`): **no la copies**.
    La meta lleva solo `joint_1` a `joint_6`.
-3. **Prepara la meta** sumando `0.10` rad a `joint_6`, igual que en la etapa 6.
+3. **Prepara la meta** sumando `0.25` rad a `joint_1`, igual que en la etapa 6. Antes de
+   enviarla, anticipa hacia qué lado girará (positivo: antihorario visto desde arriba) y revisa
+   que ese lado esté despejado.
 4. **Modo seco** sobre el hardware real:
 
    ```bash
    CFG=$(ros2 pkg prefix burger_kinova_reference)/share/burger_kinova_reference/config/kinova_connection.yaml
    ros2 run burger_kinova_reference safe_trajectory_client --ros-args --params-file $CFG \
      -p use_fake_hardware:=false -p enable_motion:=true -p dry_run:=true \
-     -p "safe_joint_positions_rad:=[<j1>, <j2>, <j3>, <j4>, <j5>, <j6 + 0.10>]"
+     -p "safe_joint_positions_rad:=[<j1 + 0.25>, <j2>, <j3>, <j4>, <j5>, <j6>]"
    echo $?
    ```
 
@@ -423,8 +429,13 @@ persona** y el resto del laboratorio lo observa.
 5. **Con autorización en voz alta**, envía el **mismo** comando cambiando solo `dry_run:=false`.
    Recupéralo con la flecha ↑ en lugar de volver a escribir los números. Responde `si`.
 
-✅ **Listo cuando** la pinza gira unos 6° sobre su eje, el cliente informa `SUCCESSFUL`, `echo $?`
-da `0` y la nueva pose coincide con la meta en `ros2 topic echo /joint_states --once`.
+✅ **Listo cuando** el brazo gira unos 14° sobre su base, el cliente informa `SUCCESSFUL`,
+`echo $?` da `0` y la nueva pose coincide con la meta en `ros2 topic echo /joint_states --once`.
+
+> [!TIP]
+> Si el espacio alrededor del brazo es reducido, haz el primer ensayo con `joint_6` y `0.10` rad:
+> solo gira la pinza sobre su eje y el brazo no se desplaza. Es menos visible, pero de menor riesgo
+> ([Laboratorio 03](../education/guias_laboratorio/GUIA_LAB_03_OPERACION_DISTRIBUIDA_KINOVA_TURNOS.md), «Fundamentos y Reglas de Seguridad en Envío de Trayectorias»).
 
 **Si algo se ve mal, pulsa la parada de emergencia.** Para cancelar desde el teclado, usa
 `Ctrl+C` en el cliente: el controlador detiene el brazo.

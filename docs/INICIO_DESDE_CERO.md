@@ -59,6 +59,24 @@ WSL2 muestra más retardos que una nativa.
 Descarga **Google Antigravity** desde su sitio oficial, [antigravity.google](https://antigravity.google),
 instálalo en Windows e inicia sesión con tu cuenta de Google.
 
+**Cómo ejecutar comandos en la terminal de Antigravity.** Toda la guía funciona así:
+
+1. **Abre una terminal:** menú **Terminal → New Terminal**. Aparece abajo, en el panel inferior.
+2. **Elige dónde se ejecuta:** con la flecha junto al botón **`+`** de ese panel eliges el perfil.
+   **PowerShell** ejecuta en Windows (el prompt empieza por `PS C:\`); **Ubuntu** ejecuta en
+   Linux (el prompt es `usuario@equipo:~$`) y aparece después del paso 1.2. Cada bloque de la
+   guía dice cuál usar; si no lo dice, es Ubuntu.
+3. **Copia el bloque** de la guía, pégalo en la terminal con `Ctrl+V` (o clic derecho) y pulsa
+   `Enter`. Cambia antes lo que esté entre `< >`, como `<usuario>`. Lo que va después de `#` es
+   un comentario con el resultado esperado: no hace falta escribirlo.
+4. **Mientras se ejecuta**, espera a que vuelva a aparecer el prompt. Si pide la contraseña de
+   `sudo`, escríbela aunque no se vea nada y pulsa `Enter`. `Ctrl+C` detiene el comando.
+5. **Cuando la guía dice «terminal 1» y «terminal 2»**, abre otra con el botón **`+`**: cada una
+   es una pestaña del panel y las dos funcionan al mismo tiempo.
+
+Cuando el agente propone un comando, lo ejecuta en su propia terminal solo después de que lo
+apruebas: lee el comando antes de aceptarlo.
+
 ### 1.2 Pedirle al agente que instale Ubuntu 24.04 en WSL
 
 Abre el panel del agente de Antigravity y pídele la instalación. Puedes copiar este mensaje:
@@ -86,58 +104,16 @@ robot ni a las demás estaciones (etapa 7). Requiere Windows 11 22H2 o posterior
 
 ### 1.3 Verificar que WSL quedó bien instalado
 
-No clones nada hasta que **todas** estas comprobaciones pasen: una instalación a medias (otra
-distribución por defecto, WSL 1, el usuario `root` o la red en NAT) no da error ahora, sino
-varias etapas después, y entonces es difícil saber de dónde viene.
+Antes de clonar, confirma tres cosas. Puedes pedírselo al agente («verifica que WSL quedó bien
+instalado con los tres comandos del paso 1.3 de la guía») o hacerlo tú:
 
-El agente de Antigravity también puede hacer esta verificación. Puedes copiarle este mensaje:
+| Dónde | Comando | Debe mostrar |
+|---|---|---|
+| PowerShell | `wsl -l -v` | `* Ubuntu-24.04` con `VERSION 2` |
+| Terminal de Ubuntu | `whoami` | Tu usuario de Linux, **no** `root` |
+| Terminal de Ubuntu | `wslinfo --networking-mode` | `mirrored` |
 
-> Verifica la instalación de WSL antes de que clone nada. En PowerShell ejecuta `wsl --status`,
-> `wsl -l -v` y `Get-Content $env:USERPROFILE\.wslconfig`. Luego, dentro de Ubuntu-24.04 y desde
-> `~`, ejecuta `lsb_release -ds`, `uname -r`, `whoami`, `pwd`, `wslinfo --networking-mode`,
-> `curl -sI https://github.com | head -1`, `ls /mnt/wslg` y `df -h ~`. Compara cada resultado con
-> lo esperado en la tabla del paso 1.3 de `docs/INICIO_DESDE_CERO.md` y dime cuáles no se cumplen
-> y cómo corregirlos. No cambies nada sin mostrarme antes el comando.
-
-Lo que exige tu contraseña (`sudo -v` y `sudo apt update`) ejecútalo tú en la terminal de Ubuntu.
-Estas son todas las comprobaciones, por si prefieres hacerlas a mano:
-
-**En PowerShell (Windows):**
-
-| Comprobación | Comando | Resultado esperado | Si no se cumple |
-|---|---|---|---|
-| WSL 2 por defecto | `wsl --status` | Versión predeterminada: **2** | `wsl --set-default-version 2` |
-| Distribución correcta y por defecto | `wsl -l -v` | `* Ubuntu-24.04` con `VERSION 2`; el asterisco marca la predeterminada | Si falta el `*`: `wsl --set-default Ubuntu-24.04`. Si dice `1`: `wsl --set-version Ubuntu-24.04 2` |
-| Red en modo espejo | `Get-Content $env:USERPROFILE\.wslconfig` | Las líneas `[wsl2]` y `networkingMode=mirrored` | Créalas como en el paso 1.2 y ejecuta `wsl --shutdown` |
-
-**En la terminal de Ubuntu** (ábrela desde el menú Inicio, **Ubuntu 24.04**, y empieza con `cd ~`):
-
-| Comprobación | Comando | Resultado esperado | Si no se cumple |
-|---|---|---|---|
-| Versión de Ubuntu | `lsb_release -ds` | `Ubuntu 24.04.x LTS` | Abriste otra distribución: revisa la predeterminada |
-| Kernel de WSL 2 | `uname -r` | Termina en `microsoft-standard-WSL2` | La distribución corre en WSL 1: ver tabla anterior |
-| Usuario propio, no `root` | `whoami` | Tu nombre de usuario | Ver el aviso de abajo |
-| `sudo` funciona | `sudo -v` | Pide tu contraseña y no muestra errores | Tu usuario no está en el grupo `sudo` |
-| Carpeta personal de Linux | `pwd` | `/home/<tu_usuario>` | Si ves `/mnt/c/...` estás en una carpeta de Windows: ejecuta `cd ~` |
-| Red en modo espejo | `wslinfo --networking-mode` | `mirrored` | Revisa `.wslconfig` y ejecuta `wsl --shutdown`. Si el comando no existe, usa `ip -brief addr`: no debe aparecer una IP `172.x.x.x` |
-| Internet desde Linux | `curl -sI https://github.com \| head -1` | `HTTP/2 200` | Revisa la conexión de Windows o el proxy de la red |
-| `apt` funciona | `sudo apt update` | Termina sin `Err:` ni `Failed to fetch` | Mismo caso anterior |
-| Ventanas gráficas (WSLg, para RViz) | `ls /mnt/wslg` | La carpeta existe | Actualiza WSL con `wsl --update` en PowerShell |
-| Espacio en disco | `df -h ~` | Al menos **20 GB** libres | Libera espacio en el disco de Windows |
-
-> [!WARNING]
-> **Si `whoami` responde `root`**, se saltó la creación del usuario. Créalo y hazlo el usuario por
-> defecto, cambiando `<usuario>` por el nombre que quieras:
->
-> ```bash
-> adduser <usuario>
-> usermod -aG sudo <usuario>
-> printf '[user]\ndefault=<usuario>\n' >> /etc/wsl.conf
-> ```
->
-> Luego, en PowerShell, `wsl --terminate Ubuntu-24.04`, y vuelve a abrir Ubuntu: `whoami` debe
-> mostrar tu usuario. Trabajar como `root` hace que los archivos del workspace queden con permisos
-> que después impiden compilar con tu usuario.
+Si algo no coincide, pídele al agente que lo corrija o mira [Si algo falla](#si-algo-falla).
 
 ### 1.4 Conectar Antigravity con Ubuntu
 
@@ -157,26 +133,15 @@ funciona igual.
 
 ### 1.5 Crear el workspace de ROS 2 y clonar el proyecto
 
-ROS 2 organiza el trabajo en un **workspace**: una carpeta con una subcarpeta `src/` donde va
-el código, y desde cuya raíz `colcon` compila. Todas las guías del proyecto usan esta estructura:
+ROS 2 trabaja en un **workspace**: una carpeta con una subcarpeta `src/` donde van los
+repositorios, uno al lado del otro. Todas las guías usan esta estructura:
 
 ```text
-~/ros2_ws/                 ← raíz del workspace: aquí, y solo aquí, se ejecuta colcon build
-├── src/                   ← código fuente: un repositorio por carpeta
-│   ├── burger_delivery/   ← este proyecto (burger_description, burger_kinova_reference…)
-│   └── ros2_kortex/       ← driver de Kinova, se agrega en la etapa 3
-├── build/                 ┐
-├── install/               ├ los crea colcon al compilar: no se editan ni se suben a git
-└── log/                   ┘
+~/ros2_ws/                 ← aquí se ejecuta colcon build
+└── src/
+    ├── burger_delivery/   ← este proyecto
+    └── ros2_kortex/       ← driver de Kinova (etapa 3)
 ```
-
-Tres reglas que evitan la mayoría de los problemas:
-
-1. Los repositorios van **directamente** dentro de `src/`, uno al lado del otro. Nunca clones un
-   repositorio dentro de otro (por ejemplo, `ros2_kortex` dentro de `burger_delivery`).
-2. `colcon build` se ejecuta siempre desde `~/ros2_ws`, nunca desde `src/` ni desde un package.
-3. El workspace se llama `ros2_ws` y vive en tu carpeta personal de Linux: los comandos de todas
-   las guías usan la ruta `~/ros2_ws/src/burger_delivery`.
 
 En la terminal de Ubuntu (o pidiéndoselo al agente con estos mismos comandos):
 
@@ -190,9 +155,7 @@ git clone https://github.com/roncanciovl/burger_delivery.git
 Comprueba que quedó donde debe:
 
 ```bash
-cd ~/ros2_ws
-ls src                                   # burger_delivery
-git -C src/burger_delivery remote -v     # origin  https://github.com/roncanciovl/burger_delivery.git
+ls ~/ros2_ws/src     # burger_delivery
 ```
 
 Después abre en Antigravity la carpeta **`~/ros2_ws`** (*File → Open Folder*, con Antigravity
@@ -215,7 +178,7 @@ que se agregará en la etapa 3.
 > una persona, con la autorización del responsable del laboratorio. No delegues en un agente el
 > movimiento del robot.
 
-✅ **Listo cuando** pasan todas las comprobaciones del paso 1.3, Antigravity muestra
+✅ **Listo cuando** pasan las tres comprobaciones del paso 1.3, Antigravity muestra
 `WSL: Ubuntu-24.04` (o tienes una terminal de Ubuntu abierta) y el explorador muestra
 `ros2_ws/src/burger_delivery` con `burger_description`, `burger_kinova_reference`, `scripts` y
 `README.md`.
@@ -545,6 +508,9 @@ comando.
 
 | Síntoma | Dónde está la respuesta |
 |---|---|
+| En el paso 1.3, `wsl -l -v` muestra `VERSION 1` o le falta el `*` | En PowerShell: `wsl --set-version Ubuntu-24.04 2` y `wsl --set-default Ubuntu-24.04` |
+| En el paso 1.3, `whoami` responde `root` | Falta crear tu usuario: en Ubuntu, `adduser <usuario>`, `usermod -aG sudo <usuario>` y `printf '[user]\ndefault=<usuario>\n' >> /etc/wsl.conf`; luego, en PowerShell, `wsl --terminate Ubuntu-24.04` |
+| En el paso 1.3, la red no está en `mirrored` | Revisa `.wslconfig` (paso 1.2) y ejecuta `wsl --shutdown` en PowerShell. Si `wslinfo` no existe, `ip -brief addr` no debe mostrar una IP `172.x.x.x` |
 | `ros2 node list` o `ros2 topic list` se quedan colgados o dan `TimeoutError` | [`TROUBLESHOOTING.md`](../TROUBLESHOOTING.md) §1 (daemon de la CLI) |
 | El driver no arranca, o aparece `/joint_states` duplicado | [`TROUBLESHOOTING.md`](../TROUBLESHOOTING.md) §2 (robot ocupado) |
 | `Invalid parameter "mock_sensor_commands"` o `invalid syntax (<expression>, line 0)` | Falta la etapa 3: [`TROUBLESHOOTING.md`](../TROUBLESHOOTING.md) §3.2 y §3.3 |

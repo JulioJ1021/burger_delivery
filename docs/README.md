@@ -11,6 +11,7 @@ Bienvenido a la sección de **documentación técnica, papers y reportes de inve
 
 ```text
 docs/
+├── INICIO_DESDE_CERO.md         # Ruta de inicio: de cero al primer movimiento del Kinova
 ├── research/                    # Experimentos, benchmarks e investigación en IA y Redes
 │   ├── EXPERIMENTO_IA_LOCALIZACION_GEMINI.md
 │   ├── EXPERIMENTO_IA_LOCALIZACION_GEMINI.pdf
@@ -32,6 +33,12 @@ docs/
     ├── PRUEBAS_MOVIMIENTO.md
     └── joints.md
 ```
+
+---
+
+## 🧭 Para empezar
+
+- [**Ruta de inicio desde cero**](INICIO_DESDE_CERO.md): instalación, compilación, robot simulado y primer movimiento real del Kinova Gen3 con `burger_kinova_reference`, en diez etapas verificables.
 
 ---
 

@@ -38,6 +38,11 @@ This repository serves as the description package (`burger_description`), experi
 
 ## 🚀 Quick Start
 
+> [!TIP]
+> **New to the project?** Follow the [**from-scratch onboarding route**](docs/INICIO_DESDE_CERO.md)
+> (in Spanish): ten checked stages, from installing ROS 2 Jazzy to the first safe motion of the
+> Kinova Gen3 with `burger_kinova_reference`, including a simulated robot run.
+
 ### Prerequisites
 - Ubuntu 24.04 with **ROS 2 Jazzy** installed. (Check `install_ros2.sh` and the guide in `ros2_setup/`).
 - `colcon` build tool and ROS 2 desktop packages (`rviz2`, `joint_state_publisher_gui`, `xacro`).

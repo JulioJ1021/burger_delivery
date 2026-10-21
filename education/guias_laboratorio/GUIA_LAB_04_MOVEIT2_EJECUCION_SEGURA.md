@@ -6,6 +6,10 @@
 |:---|:---|:---|:---:|:---:|:---:|
 | Facultad de Ingeniería | Ingeniería Mecatrónica | ROBOT OPERATING SYSTEM - ROS | VIII – IX | GL-AA-F-1 / LAB-04 (Corte 3) | 1.0 (2026-2) |
 
+> [!IMPORTANT]
+> **Actualización del Repositorio Privado del Equipo:**
+> Antes de iniciar o continuar con este laboratorio, asegúrese de haber sincronizado su repositorio privado de equipo con los últimos cambios de la base del curso. Consulte la [Guía Oficial de Sincronización y Actualizaciones](../proyectos_evaluables/ACTUALIZACIONES_BASE_CORTE_1.md) (`education/proyectos_evaluables/ACTUALIZACIONES_BASE_CORTE_1.md`) para realizar este proceso correctamente.
+
 ---
 
 ## 1. CONTROL DE CAMBIOS
@@ -14,6 +18,8 @@
 |---|---|:---:|
 | Creación e implementación de la Guía de Laboratorio 04 | Lleva MoveIt 2 al Kinova Gen3 real sin perder las salvaguardas validadas en los cortes 1 y 2: `move_group` sólo planifica y `burger_kinova_reference` valida y ejecuta cada trayectoria (`moveit_safe_executor`). La mesa y los marcos de la celda se toman de `burger_description`. | 19/10/2026 |
 | Base del Gen3 apoyada sobre la cara superior de la mesa en `burger_description` | Al cargar la escena en MoveIt, la mesa invadía 25 mm la base del robot (`table_to_world` en z = 0 con la mesa centrada en `table_link`) y MoveIt declaraba en colisión el estado inicial. `table_to_world` pasa a z = 0.025 m, la misma altura de `tag_mesa`. La Fase 1 reproduce el fallo a propósito. | 19/10/2026 |
+| Instrumento ABET de entrega | Se crea `INSTRUMENTO_ABET_LAB_04_MOVEIT2_EJECUCION_SEGURA` (Markdown y Word) con las Tablas 1 a 6, las evidencias E1 a E9, el cuestionario, el Anexo A y las rúbricas de C1 a C5. Las secciones 5.2 y 8 lo citan como formato de entrega. | 21/10/2026 |
+| Aviso de sincronización con la base del curso | Igual que en los talleres, la guía empieza recordando sincronizar el repositorio privado del equipo con la base del curso (`base-latest`) antes del laboratorio. | 21/10/2026 |
 
 ---
 
@@ -148,7 +154,7 @@ Cada criterio se califica en cinco niveles sobre la escala de 0 a 500. **N3 es e
 |---|:---:|:---:|
 | Portátil con Ubuntu 24.04, ROS 2 Jazzy y MoveIt 2 (`ros-jazzy-moveit`, `ros-jazzy-kinova-gen3-6dof-robotiq-2f-85-moveit-config`) | 1 | Por grupo |
 | Workspace `~/ros2_ws` con `burger_delivery` y `ros2_kortex` compilados | 1 | Workspace |
-| Informe del grupo con las Tablas 1 a 6 y los registros `*.jsonl` | 1 | Documento |
+| Instrumento de entrega del laboratorio (DOCX) con las Tablas 1 a 6, más los registros `*.jsonl` | 1 | Documento |
 
 ---
 
@@ -168,7 +174,7 @@ Cada criterio se califica en cinco niveles sobre la escala de 0 a 500. **N3 es e
 
 ### Fase 0: Entorno, Compilación y Dominio del Grupo
 
-1. Actualice el repositorio del grupo con la base del curso y compile:
+1. Actualice el repositorio del grupo con la base del curso ([Guía de Sincronización](../proyectos_evaluables/ACTUALIZACIONES_BASE_CORTE_1.md)) y compile:
    ```bash
    cd ~/ros2_ws
    colcon build --packages-select burger_description burger_kinova_reference
@@ -253,7 +259,7 @@ Primero copie las metas a la carpeta del grupo; las pruebas 4.4 y 4.5 añaden me
 mkdir -p $HOME/lab04_eqNN && cp $SHARE/config/metas_moveit.yaml $HOME/lab04_eqNN/metas_eqNN.yaml
 ```
 
-| # | Prueba | Cómo provocarla |
+| N.º | Prueba | Cómo provocarla |
 |:---:|---|---|
 | 4.1 | Velocidad | `-p max_velocity_rad_s:=0.05` |
 | 4.2 | Velocidad declarada por MoveIt | `-p velocity_scaling:=0.6` (deja `max_velocity_rad_s` en 0.35) |
@@ -320,7 +326,7 @@ ros2 launch burger_kinova_reference moveit_planificacion.launch.py use_fake_hard
 
 ## 8. RESULTADOS DE LA PRÁCTICA
 
-Las tablas se diligencian en el informe del grupo y se adjuntan los archivos `seco.jsonl`, `fake.jsonl` y `real.jsonl` que escribe el ejecutor (`report_file`), más la bolsa de la Fase 6.
+Las tablas se diligencian en el instrumento de entrega, [`INSTRUMENTO_ABET_LAB_04_MOVEIT2_EJECUCION_SEGURA.docx`](../evidencias_abet/INSTRUMENTO_ABET_LAB_04_MOVEIT2_EJECUCION_SEGURA.docx), que se entrega como `C3_L04_G<grupo>_<codigo1>_<codigo2>_v1.docx`. Con él se adjuntan `metas_eqNN.yaml`, los archivos `seco.jsonl`, `fake.jsonl` y `real.jsonl` que escribe el ejecutor (`report_file`) y la salida de `ros2 bag info` de la bolsa de la Fase 6. Aquí se reproducen como referencia para la sesión.
 
 ### Tabla 1: Entorno
 | Ítem | Valor |
@@ -349,7 +355,7 @@ Las tablas se diligencian en el informe del grupo y se adjuntan los archivos `se
 | `home` | articular | | | | | |
 
 ### Tabla 4: Bloqueos Provocados
-| # | Regla o capa que actuó | Mensaje exacto | Código de salida | ¿Por qué ocurre? |
+| N.º | Regla o capa que actuó | Mensaje exacto | Código de salida | ¿Por qué ocurre? |
 |:---:|---|---|:---:|---|
 | 4.1 | | | | |
 | 4.2 | | | | |

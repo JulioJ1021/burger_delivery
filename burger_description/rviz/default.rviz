@@ -240,56 +240,6 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        wrist_camera_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        wrist_camera_mount_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        wrist_mounted_camera_bottom_screw_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        wrist_mounted_camera_color_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        wrist_mounted_camera_color_optical_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        wrist_mounted_camera_depth_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        wrist_mounted_camera_depth_optical_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        wrist_mounted_camera_infra1_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        wrist_mounted_camera_infra1_optical_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        wrist_mounted_camera_infra2_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        wrist_mounted_camera_infra2_optical_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        wrist_mounted_camera_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
       Mass Properties:
         Inertia: false
         Mass: false
@@ -429,30 +379,6 @@ Visualization Manager:
           Value: true
         world:
           Value: true
-        wrist_camera_link:
-          Value: true
-        wrist_camera_mount_link:
-          Value: true
-        wrist_mounted_camera_bottom_screw_frame:
-          Value: true
-        wrist_mounted_camera_color_frame:
-          Value: true
-        wrist_mounted_camera_color_optical_frame:
-          Value: true
-        wrist_mounted_camera_depth_frame:
-          Value: true
-        wrist_mounted_camera_depth_optical_frame:
-          Value: true
-        wrist_mounted_camera_infra1_frame:
-          Value: true
-        wrist_mounted_camera_infra1_optical_frame:
-          Value: true
-        wrist_mounted_camera_infra2_frame:
-          Value: true
-        wrist_mounted_camera_infra2_optical_frame:
-          Value: true
-        wrist_mounted_camera_link:
-          Value: true
       Marker Scale: 1
       Name: TF
       Show Arrows: true
@@ -509,23 +435,6 @@ Visualization Manager:
                                   gen3_robotiq_85_right_finger_link:
                                     gen3_robotiq_85_right_finger_tip_link:
                                       {}
-                            wrist_camera_link:
-                              wrist_mounted_camera_bottom_screw_frame:
-                                wrist_mounted_camera_link:
-                                  wrist_mounted_camera_color_frame:
-                                    wrist_mounted_camera_color_optical_frame:
-                                      {}
-                                  wrist_mounted_camera_depth_frame:
-                                    wrist_mounted_camera_depth_optical_frame:
-                                      {}
-                                  wrist_mounted_camera_infra1_frame:
-                                    wrist_mounted_camera_infra1_optical_frame:
-                                      {}
-                                  wrist_mounted_camera_infra2_frame:
-                                    wrist_mounted_camera_infra2_optical_frame:
-                                      {}
-                            wrist_camera_mount_link:
-                              {}
       Update Interval: 0
       Value: true
   Enabled: true

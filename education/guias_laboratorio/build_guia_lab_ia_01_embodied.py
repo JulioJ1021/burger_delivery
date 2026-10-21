@@ -287,6 +287,8 @@ def construir_guia(secs: dict, docente: str):
         for texto, negrita in ((etiqueta + " ", True), (datos.get(clave, ""), False)):
             r = p.add_run(texto)
             r.font.name, r.font.size, r.bold = estilo.FONT, Pt(9), negrita
+    # Avisos previos a la sección 1 (p. ej. sincronizar con la base del curso).
+    escribir(doc, [b for b in secs["_inicio"] if b[0] == "aviso"], material)
 
     for titulo, contenido in secs.items():
         if titulo in ("_inicio", "CONTROL DE CAMBIOS") or titulo.startswith("APROBACIÓN"):

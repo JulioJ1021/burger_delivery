@@ -6,6 +6,10 @@
 |:---|:---|:---|:---:|:---:|:---:|
 | Facultad de Ingeniería | Ingeniería Mecatrónica | ROBOT OPERATING SYSTEM - ROS | VIII – IX | GL-AA-F-1 / LAB-04 (Corte 3) | 1.0 (2026-2) |
 
+> [!IMPORTANT]
+> **Actualización del Repositorio Privado del Equipo:**
+> Antes de iniciar o continuar con este laboratorio, asegúrese de haber sincronizado su repositorio privado de equipo con los últimos cambios de la base del curso. Consulte la [Guía Oficial de Sincronización y Actualizaciones](../proyectos_evaluables/ACTUALIZACIONES_BASE_CORTE_1.md) (`education/proyectos_evaluables/ACTUALIZACIONES_BASE_CORTE_1.md`) para realizar este proceso correctamente.
+
 ---
 
 ## 1. CONTROL DE CAMBIOS
@@ -15,6 +19,7 @@
 | Creación e implementación de la Guía de Laboratorio 04 | Lleva MoveIt 2 al Kinova Gen3 real sin perder las salvaguardas validadas en los cortes 1 y 2: `move_group` sólo planifica y `burger_kinova_reference` valida y ejecuta cada trayectoria (`moveit_safe_executor`). La mesa y los marcos de la celda se toman de `burger_description`. | 19/10/2026 |
 | Base del Gen3 apoyada sobre la cara superior de la mesa en `burger_description` | Al cargar la escena en MoveIt, la mesa invadía 25 mm la base del robot (`table_to_world` en z = 0 con la mesa centrada en `table_link`) y MoveIt declaraba en colisión el estado inicial. `table_to_world` pasa a z = 0.025 m, la misma altura de `tag_mesa`. La Fase 1 reproduce el fallo a propósito. | 19/10/2026 |
 | Instrumento ABET de entrega | Se crea `INSTRUMENTO_ABET_LAB_04_MOVEIT2_EJECUCION_SEGURA` (Markdown y Word) con las Tablas 1 a 6, las evidencias E1 a E9, el cuestionario, el Anexo A y las rúbricas de C1 a C5. Las secciones 5.2 y 8 lo citan como formato de entrega. | 21/10/2026 |
+| Aviso de sincronización con la base del curso | Igual que en los talleres, la guía empieza recordando sincronizar el repositorio privado del equipo con la base del curso (`base-latest`) antes del laboratorio. | 21/10/2026 |
 
 ---
 
@@ -169,7 +174,7 @@ Cada criterio se califica en cinco niveles sobre la escala de 0 a 500. **N3 es e
 
 ### Fase 0: Entorno, Compilación y Dominio del Grupo
 
-1. Actualice el repositorio del grupo con la base del curso y compile:
+1. Actualice el repositorio del grupo con la base del curso ([Guía de Sincronización](../proyectos_evaluables/ACTUALIZACIONES_BASE_CORTE_1.md)) y compile:
    ```bash
    cd ~/ros2_ws
    colcon build --packages-select burger_description burger_kinova_reference

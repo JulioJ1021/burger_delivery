@@ -69,7 +69,9 @@ def texto_plano(texto: str) -> str:
 
 
 def celdas(linea: str) -> list[str]:
-    return [texto_plano(c.strip()) for c in linea.strip().strip("|").split("|")]
+    # «\|» es una barra literal dentro de una celda (p. ej. «cmd \| grep x»), no un separador.
+    partes = re.split(r"(?<!\\)\|", linea.strip().strip("|"))
+    return [texto_plano(c.strip().replace("\\|", "|")) for c in partes]
 
 
 def bloques(md: str):

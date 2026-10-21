@@ -30,6 +30,11 @@ from build_guia_lab_02_camara_kinova import clean  # noqa: E402
 FUENTE = AQUI / "INSTRUMENTO_ABET_LAB_IA_01_EMBODIED_AI_GEMINI_ER2.md"
 DESTINO = AQUI / "INSTRUMENTO_ABET_LAB_IA_01_EMBODIED_AI_GEMINI_ER2.docx"
 PIE = "IA · Instrumento Único de Evidencia y Evaluación ABET — Lab IA 01 · 2026-2"
+# Metadatos del .docx; otros instrumentos generados desde Markdown los cambian
+# (build_instrumento_lab_04.py).
+TITULO_DOC = "Instrumento ABET – Laboratorio IA 01 – Embodied AI con Gemini Robotics-ER 2"
+ASIGNATURA = "INTELIGENCIA ARTIFICIAL"
+CONSTRUCTOR = Path(__file__).name
 
 
 def plano(texto: str) -> str:
@@ -94,9 +99,9 @@ def construir():
     r.font.name, r.font.size = estilo.FONT, Pt(8)
 
     cp = doc.core_properties
-    cp.title = "Instrumento ABET – Laboratorio IA 01 – Embodied AI con Gemini Robotics-ER 2"
-    cp.subject, cp.author = "INTELIGENCIA ARTIFICIAL", "Universidad Militar Nueva Granada"
-    cp.comments = f"Generado desde {FUENTE.name} con {Path(__file__).name}."
+    cp.title = TITULO_DOC
+    cp.subject, cp.author = ASIGNATURA, "Universidad Militar Nueva Granada"
+    cp.comments = f"Generado desde {FUENTE.name} con {CONSTRUCTOR}."
     doc.save(DESTINO)
     print(f"Instrumento ABET Word generado en: {DESTINO}")
 

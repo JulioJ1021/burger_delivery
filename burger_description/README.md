@@ -15,9 +15,12 @@
 > | `burger_description` (vendorizado) | `gen3_base_link → gen3_shoulder_link → gen3_bicep_link → gen3_forearm_link → …` | 6 |
 >
 > Tienen la misma cinemática, pero el de `burger_description` lleva todos sus frames bajo el
-> prefijo `gen3_` y lo publica `display.launch.py`, un visor sin robot. El RViz que abre
-> `kinova_connection.launch.py` con `launch_rviz:=true` usa el del driver, que refleja la
-> posición articular real. Los URDF de referencia de Kinova en `vendor/robots/` siguen siendo
+> prefijo `gen3_` y lo publica `display.launch.py`. Sin argumentos es un visor sin robot,
+> movido por el deslizador. Con `robot_real:=true` muestra la escena completa del
+> laboratorio con la pose real del brazo: `scene_joint_relay.py` copia `/joint_states` del
+> driver a `/scene/joint_states` con el prefijo `gen3_`. El RViz que abre
+> `kinova_connection.launch.py` con `launch_rviz:=true` usa el modelo del driver, sin la
+> escena. Los URDF de referencia de Kinova en `vendor/robots/` siguen siendo
 > los originales de 7 GDL.
 
 
@@ -66,6 +69,22 @@ Esto lanza automáticamente:
 **Configuración en RViz:**
 - En el panel izquierdo "Global Options" → **Fixed Frame** → Selecciona `map`
 - Verifica que estén habilitados: ✓ RobotModel, ✓ TF
+
+### Escena del laboratorio con el Kinova real
+
+Con el driver corriendo en la estación anfitriona del mismo `ROS_DOMAIN_ID` (ver
+`burger_kinova_reference`), la misma escena se mueve con la pose real del brazo:
+
+```bash
+ros2 launch burger_description display.launch.py robot_real:=true use_static_carts:=true
+```
+
+En este modo no se abre el deslizador. `scene_joint_relay.py` copia `/joint_states` del
+driver a `/scene/joint_states` con el prefijo `gen3_`, y la escena se publica en
+`/scene/robot_description` para no pisar el `/robot_description` del driver. RViz abre
+`rviz/laboratorio.rviz`. Solo lee estado y no envía comandos, así que también funciona
+en una estación cliente. Con `use_static_carts:=false`, los TF `tag_mesa → tag_carrito{1,2}`
+quedan a cargo del localizador AprilTag.
 
 ### Lanzar Tu Nodo de Control (Nodo 2: Controlador)
 

@@ -32,9 +32,12 @@ header-includes:
 > | `burger_description` (vendorizado) | `gen3_base_link → gen3_shoulder_link → gen3_bicep_link → gen3_forearm_link → …` | 6 |
 >
 > Tienen la misma cinemática, pero el de `burger_description` lleva todos sus frames bajo el
-> prefijo `gen3_` y lo publica `display.launch.py`, un visor sin robot. El RViz que abre
-> `kinova_connection.launch.py` con `launch_rviz:=true` usa el del driver, que refleja la
-> posición articular real. Los URDF de referencia de Kinova en `vendor/robots/` siguen siendo
+> prefijo `gen3_` y lo publica `display.launch.py`. Sin argumentos es un visor sin robot,
+> movido por el deslizador. Con `robot_real:=true` muestra la escena completa del
+> laboratorio con la pose real del brazo: `scene_joint_relay.py` copia `/joint_states` del
+> driver a `/scene/joint_states` con el prefijo `gen3_`. El RViz que abre
+> `kinova_connection.launch.py` con `launch_rviz:=true` usa el modelo del driver, sin la
+> escena. Los URDF de referencia de Kinova en `vendor/robots/` siguen siendo
 > los originales de 7 GDL.
 
 

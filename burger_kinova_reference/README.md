@@ -308,6 +308,10 @@ ros2 launch burger_kinova_reference kinova_connection.launch.py \
 La IP anterior es un ejemplo del laboratorio: ajústala a la configuración verificada el
 día de la práctica.
 
+Con `launch_scene:=true` se abre además la escena del laboratorio (mesa, carritos, tags y
+cámara cenital) con la pose real del brazo. Es `burger_description/launch/display.launch.py`
+con `robot_real:=true`; ver el README de `burger_description`.
+
 ### 6.3. Monitor como cliente en una segunda estación
 
 ```bash

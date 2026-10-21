@@ -35,6 +35,9 @@ launch:
     robot_ip: "0.0.0.0"
     use_fake_hardware: true
     launch_rviz: false
+    # Escena del laboratorio (mesa, carritos, tags) movida por /joint_states del driver.
+    # Incluye burger_description/launch/display.launch.py con robot_real:=true.
+    launch_scene: false
     # Parámetros que se transfieren tal cual al bringup oficial de Kinova.
     robot_type: "gen3"
     # ⚠ El brazo del laboratorio es un Gen3 de SEIS grados de libertad con pinza

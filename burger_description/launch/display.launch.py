@@ -163,11 +163,15 @@ def generate_launch_description():
             arguments=['-d', rviz_config_file],
             condition=UnlessCondition(robot_real)),
 
+        # Con el robot real, RViz comparte la CPU con el ciclo de control del driver, que en
+        # WSL no obtiene prioridad de tiempo real. Con prioridad baja, RViz deja de retrasar
+        # ese ciclo (ver TROUBLESHOOTING.md §3.7).
         Node(
             package='rviz2',
             executable='rviz2',
             name='rviz_laboratorio',
             output='screen',
+            prefix='nice -n 19',
             arguments=['-d', rviz_lab_file],
             condition=IfCondition(robot_real)),
     ])

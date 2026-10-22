@@ -8,6 +8,7 @@ Esta guía cubre los fallos que más tiempo consumen en el laboratorio:
 | El driver no arranca, o hay telemetría duplicada, porque **el robot ya está en uso** | [2. Hardware ocupado: un solo robot, varias estaciones](#2-hardware-ocupado-un-solo-robot-y-varias-estaciones) |
 | El robot se mueve a tirones y el log del driver muestra `WRONG_SERVOING_MODE` o `Fault was not recognized ... combination of Control Mode and Active State` | [2.6 Otra estación lanzó un segundo driver](#26-otra-estación-lanzó-un-segundo-driver-y-le-quitó-el-control-al-primero) |
 | No sé quién tiene el robot ocupado | [2.0 La configuración recomendada](#20-la-configuración-recomendada-léela-antes-que-el-resto) |
+| El brazo vibra al moverse, sin `WRONG_SERVOING_MODE` y con la estación por cable | [3.7 Ciclo de control retrasado por el WiFi o por RViz](#37-el-brazo-vibra-al-moverse-aunque-la-estación-va-por-cable) |
 | Mi código parece correcto y aun así el driver no arranca, o publica datos absurdos | [3. Fallos de plataforma ajenos a tu código](#3-fallos-de-plataforma-ajenos-a-tu-código) |
 | La cámara del Kinova da `Failed to start stream`, o `kinova_vision` no se detiene con `Ctrl+C` | [3.4 El driver de visión no se detiene limpiamente](#34-el-driver-de-visión-no-se-detiene-limpiamente-y-deja-la-cámara-bloqueada) |
 | Debe publicarse sólo la imagen comprimida, pero aparece `image_raw` o RViz no ofrece `/compressed` | [3.5 Lanzar sólo la imagen comprimida del Kinova](#35-el-launch-estándar-anuncia-image_raw-lanzar-sólo-la-imagen-comprimida) |
@@ -970,6 +971,46 @@ Antes de dar por malo tu código, comprueba en este orden:
    tenía un publicador y `/camera/color/image_raw` era desconocido? Ver el problema 3.5.
 
 Sólo si los seis salen limpios tiene sentido revisar la lógica de tu package.
+
+### 3.7 El brazo vibra al moverse aunque la estación va por cable
+
+El movimiento termina con `SUCCESSFUL` y sin cortes de telemetría, pero el brazo se ve
+vibrar durante la trayectoria. El `joint_trajectory_controller` entrega al Kinova una
+consigna de posición cada 10 ms. Cuando un ciclo llega tarde, el robot sostiene la
+consigna anterior y luego recibe un salto doble. Esos frenazos repetidos se ven como
+vibración. Hay dos causas que se suman, y ninguna depende de tu código:
+
+1. **El WiFi sigue conectado junto al cable, en la misma subred.** La ruta al robot sale
+   por el cable, pero el enlace conserva la variabilidad del WiFi. Si la sesión del driver
+   se abrió antes de conectar el cable, además sigue saliendo por el WiFi
+   (`ss -tanp | grep 192.168.1.10` muestra la IP de origen).
+2. **RViz compite por la CPU con el ciclo de control.** RViz usa unos 3 núcleos, y en WSL
+   `ros2_control_node` no obtiene prioridad de tiempo real
+   (`Could not enable FIFO RT scheduling policy`).
+
+Medido el 2026-10-22 con el robot quieto, 60 s de `/joint_states` (intervalos entre
+mensajes, no los avisos de overrun; ver
+[`EXPERIMENTO_ENLACE_WIFI_VS_ETHERNET.md`](burger_kinova_reference/docs/EXPERIMENTO_ENLACE_WIFI_VS_ETHERNET.md) §3):
+
+| Condición | `ping` mdev | p90 | p99 | > 20 ms | Overruns / 120 s |
+| :--- | ---: | ---: | ---: | ---: | ---: |
+| Cable + WiFi conectado, RViz normal | 2.8 ms | 14.2 ms | 19.9 ms | 0.87 % | ~52 |
+| Sólo cable, RViz normal | 0.31 ms | 11.3 ms | 17.7 ms | 0.24 % | ~42 |
+| Sólo cable, RViz con `nice -n 19` | 0.31 ms | 10.9 ms | 16.4 ms | 0.03 % | ~18 |
+
+**Qué hacer.** Desconecta el WiFi en Windows antes de lanzar el driver (en PowerShell:
+`netsh wlan disconnect interface="<nombre del adaptador>"`). Comprueba con
+`ip -brief -4 addr` que sólo queda la interfaz del cable. Si la escena o el daemon se
+lanzaron antes con el WiFi activo, relánzalos, porque Cyclone DDS los ató a esa interfaz.
+`display.launch.py robot_real:=true` ya abre RViz con `nice -n 19`. Si usas otro RViz
+junto al driver, lánzalo con `nice -n 19 rviz2 ...`.
+
+**Lo que queda.** Con las dos medidas aplicadas, el mismo barrido de `joint_1` (±0.60 rad)
+se vio a simple vista con menos vibración que con el WiFi activo y RViz con prioridad
+normal. Aun así, con el brazo en movimiento los ciclos de más de 20 ms subieron a 0.58 %
+en las mismas condiciones. El residuo viene de WSL, que no da tiempo real al ciclo. Por eso
+el driver corre a 100 Hz en lugar del 1 kHz para el que está pensada la API Kortex.
+Eliminarlo exige Linux nativo con planificación de tiempo real.
 
 ---
 
